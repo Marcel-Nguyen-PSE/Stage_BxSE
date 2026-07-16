@@ -37,6 +37,7 @@ library(rnaturalearthdata)
 library(scales)
 library(MatchIt)
 library(cobalt)
+library(ggh4x)
 
 df <- read_dta('Data/Data_SEP_FSA.dta')
 
@@ -65,6 +66,14 @@ plot_sep_month <- ggplot(
   theme_minimal() 
 
 plot_sep_month
+
+ggsave(
+  'Output/plot_sep_month.jpeg',
+  plot_sep_month, 
+  width = 12,
+  height = 7,
+  dpi = 300
+)
 
 # Monthly evolution of SEP AND non-SEP actions ---- 
 
@@ -96,3 +105,99 @@ plot_sep_nsep_month <- ggplot(data = df, aes(x = Date)) +
     theme_minimal()
 
 plot_sep_nsep_month
+
+ggsave(
+  'Output/plot_sep_nsep_month.jpeg',
+  plot_sep_nsep_month, 
+  width = 12,
+  height = 7,
+  dpi = 300
+)
+
+# Share of SEP cases among all UPC actions ----
+
+# Across jurisdictions ---- 
+
+quarterly_juris <- df %>%
+  mutate(
+    jurisdiction = sub(".*[-]\\s*", "", Courtdivision),
+    quarter = floor_date(Date, "quarter")
+  ) %>%
+  group_by(jurisdiction, quarter) %>%
+  summarise(
+    n_sep = n_distinct(ID[SEP == 1]),
+    n_total = n_distinct(ID),
+    share_sep = n_sep / n_total,
+    .groups = "drop"
+  )
+
+plot_share_juris <- ggplot(
+  quarterly_juris,
+  aes(x = quarter, y = share_sep)
+) +
+  geom_col() +
+  scale_x_date(
+  date_breaks = "3 months",
+  labels = function(x) {
+    ifelse(
+      lubridate::quarter(x) == 1,
+      paste0("Q1\n", lubridate::year(x)),
+      paste0("Q", lubridate::quarter(x))
+    )
+  }
+) +
+  scale_y_continuous(
+    limits = c(0, 1),
+    breaks = seq(0, 1, 0.2),
+    labels = scales::percent
+  ) +
+  facet_wrap(~ jurisdiction,
+            axes = 'all') +
+  theme_minimal()
+
+plot_share_juris
+
+ggsave(
+  'Output/plot_share_juris.jpeg',
+  plot_share_juris, 
+  width = 12, 
+  height = 7,
+  dpi = 500
+)
+
+plot_share_juris_sup0 <- ggplot(
+  quarterly_juris %>% 
+    group_by(jurisdiction) %>%
+    filter(any(n_sep > 0)),
+  aes(x = quarter, y = share_sep)
+) +
+  geom_col() +
+  scale_x_date(
+  date_breaks = "3 months",
+  labels = function(x) {
+    ifelse(
+      lubridate::quarter(x) == 1,
+      paste0("Q1\n", lubridate::year(x)),
+      paste0("Q", lubridate::quarter(x))
+    )
+  }
+) +
+  scale_y_continuous(
+    limits = c(0, 1),
+    breaks = seq(0, 1, 0.2),
+    labels = scales::percent
+  ) +
+  facet_wrap(~ jurisdiction,
+            axes = 'all') +
+  theme_minimal()
+
+plot_share_juris_sup0
+
+ggsave(
+  'Output/plot_share_juris_sup0.jpeg',
+  plot_share_juris_sup0,
+  width = 12, 
+  height = 7, 
+  dpi = 500
+)
+
