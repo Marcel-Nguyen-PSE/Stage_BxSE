@@ -129,6 +129,9 @@ quarterly_juris <- df %>%
     n_total = n_distinct(ID),
     share_sep = n_sep / n_total,
     .groups = "drop"
+  ) %>%
+  mutate(
+    highlight = share_sep == 1
   )
 
 plot_share_juris <- ggplot(
@@ -153,7 +156,14 @@ plot_share_juris <- ggplot(
   ) +
   facet_wrap(~ jurisdiction,
             axes = 'all') +
-  theme_minimal()
+  theme_minimal() + 
+  theme(
+  panel.grid.major.x = element_blank(),
+  panel.grid.minor.x = element_blank(),
+  panel.grid.major.y = element_line(colour = "grey85"),
+  panel.grid.minor.y = element_blank()
+)
+
 
 plot_share_juris
 
@@ -169,9 +179,20 @@ plot_share_juris_sup0 <- ggplot(
   quarterly_juris %>% 
     group_by(jurisdiction) %>%
     filter(any(n_sep > 0)),
-  aes(x = quarter, y = share_sep)
+  aes(x = quarter, y = share_sep, fill = highlight)
 ) +
-  geom_col() +
+  geom_col(
+  ) +
+  geom_text(
+    aes(label = ifelse(
+      share_sep > 0 & share_sep < 1,
+      round(share_sep * 100, 0),
+      ""
+    )),
+    vjust = -0.8, 
+    size = 2.5,
+    fontface = 'bold'
+  ) + 
   scale_x_date(
   date_breaks = "3 months",
   labels = function(x) {
@@ -187,9 +208,24 @@ plot_share_juris_sup0 <- ggplot(
     breaks = seq(0, 1, 0.2),
     labels = scales::percent
   ) +
+  scale_fill_manual(
+    values = c(
+      'TRUE' = '#0B5CAB',
+      'FALSE' = '#003A70'
+    )
+  ) + 
   facet_wrap(~ jurisdiction,
             axes = 'all') +
-  theme_minimal()
+  theme_minimal() +
+  theme(
+  panel.grid.major.x = element_blank(),
+  panel.grid.minor.x = element_blank(),
+  panel.grid.major.y = element_line(colour = "grey85"),
+  panel.grid.minor.y = element_blank(),
+  legend.position = 'none',
+  axis.title.x = element_blank(),
+  axis.title.y = element_blank()
+) 
 
 plot_share_juris_sup0
 
