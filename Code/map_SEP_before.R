@@ -90,19 +90,27 @@ plot_sep_nsep_month <- ggplot(data = df, aes(x = Date)) +
     data = df,
     aes(y = n_actions_sep), 
     linewidth = 1.2, 
-    color = 'green'
+    color = '#003A70'
   ) + 
     geom_line(
       data = df, 
       aes(y = n_actions_nsep),
       linewidth = 1.2,
-      color = 'red'
+      color = '#0B5CAB'
   ) + 
     scale_x_date(
       date_breaks = '3 months',
       date_labels = '%b\n%Y'
     ) +
-    theme_minimal()
+    theme_minimal() +
+  theme(
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank(),
+    panel.grid.major.x = element_blank(),
+    panel.grid.minor.x = element_blank(),
+    panel.grid.major.y = element_line(colour = "grey85"),
+    panel.grid.minor.y = element_blank()
+  )
 
 plot_sep_nsep_month
 
@@ -518,6 +526,13 @@ edges_plot <- edges %>%
         y_court = y
       ),
     by = "court_id"
+  ) %>%
+  mutate(
+    edge_colour = ifelse(
+      court %in% top3_jurisdictions,
+      party_type,
+      'Other'
+    )
   )
 
 years <- tibble(
@@ -527,10 +542,27 @@ years <- tibble(
   )
 )
 
-nodes_by_year <- tidyr::crossing(
-  nodes,
-  years
-)
+top3_jurisdictions <- edges_plot %>%
+  group_by(court) %>%
+  summarise(
+    n_cases = sum(n_cases),
+    .groups = "drop"
+  ) %>%
+  slice_max(
+    order_by = n_cases,
+    n = 3,
+    with_ties = FALSE
+  ) %>%
+  pull(court)
+
+nodes_by_year <- nodes_by_year %>%
+  mutate(
+    node_colour = case_when(
+      node_type != "UPC jurisdiction" ~ node_type,
+      label %in% top3_jurisdictions   ~ "Top 3 jurisdiction",
+      TRUE                            ~ "Other jurisdiction"
+    )
+  )
 
 flow_network <- ggplot() +
   geom_curve(
@@ -540,7 +572,7 @@ flow_network <- ggplot() +
       y = y_origin,
       xend = x_court,
       yend = y_court,
-      colour = party_type,
+      colour = edge_colour,
       linewidth = n_cases
     ),
     curvature = 0.10,
@@ -556,7 +588,7 @@ flow_network <- ggplot() +
     aes(
       x = x,
       y = y,
-      fill = node_type
+      fill = node_colour
     ),
     shape = 21,
     size = 4,
@@ -564,45 +596,45 @@ flow_network <- ggplot() +
     colour = "grey20"
   ) +
   geom_text(
-  data = nodes_by_year %>%
-    filter(node_type == "Claimant country"),
-  aes(
-    x = x,
-    y = y,
-    label = label
-  ),
-  hjust = 1,
-  nudge_x = -0.06,
-  family = "sans",
-  size = 2.8
-) +
+    data = nodes_by_year %>%
+      filter(node_type == "Claimant country"),
+    aes(
+      x = x,
+      y = y,
+      label = label
+    ),
+    hjust = 1,
+    nudge_x = -0.12,   # increased distance
+    family = "sans",
+    size = 2.8
+  ) +
   geom_text(
-  data = nodes_by_year %>%
-    filter(node_type == "UPC jurisdiction"),
-  aes(
-    x = x,
-    y = y,
-    label = label
-  ),
-  hjust = 0,
-  nudge_x = 0.06,
-  family = "sans",
-  size = 2,
-  fontface = "bold"
-) +
+    data = nodes_by_year %>%
+      filter(node_type == "UPC jurisdiction"),
+    aes(
+      x = x,
+      y = y,
+      label = label
+    ),
+    hjust = 0,
+    nudge_x = 0.1,
+    family = "sans",
+    size = 2,
+    fontface = "bold"
+  ) +
   geom_text(
-  data = nodes_by_year %>%
-    filter(node_type == "Defendant country"),
-  aes(
-    x = x,
-    y = y,
-    label = label
-  ),
-  hjust = 0,
-  nudge_x = 0.06,
-  family = "sans",
-  size = 2.8
-) +
+    data = nodes_by_year %>%
+      filter(node_type == "Defendant country"),
+    aes(
+      x = x,
+      y = y,
+      label = label
+    ),
+    hjust = 0,
+    nudge_x = 0.12,    # increased distance
+    family = "sans",
+    size = 2.8
+  ) +
   facet_wrap(
     ~year,
     ncol = 2,
@@ -624,15 +656,16 @@ flow_network <- ggplot() +
   ) +
   scale_colour_manual(
     values = c(
-      "Claimant" = "#0072B2",
-      "Defendant" = "#D55E00"
+      "Claimant" = "#003A70",
+      "Defendant" = "#E69F00"
     )
   ) +
   scale_fill_manual(
     values = c(
-      "Claimant country" = "white",
-      "UPC jurisdiction" = "grey70",
-      "Defendant country" = "white"
+      "Claimant country"   = "white",
+      "Defendant country"  = "white",
+      "Top 3 jurisdiction" = "#0B5CAB",
+      "Other jurisdiction" = "grey70"
     )
   ) +
   scale_linewidth_continuous(
@@ -670,7 +703,7 @@ ggsave('Output/map_geo_sep.jpeg',
         dpi = 500
 )
 
-# Outcome distribution of SEP actions 
+# Outcome distribution of SEP actions ----
 
 df_outcome <- df %>%
   filter(SEP == 1) %>%
