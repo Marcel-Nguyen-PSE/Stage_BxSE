@@ -634,3 +634,22 @@ ggsave('Output/map_geo_sep.jpeg',
         dpi = 500
 )
 
+# Outcome distribution of SEP actions 
+
+df_outcome <- df %>%
+  filter(SEP == 1) %>%
+  group_by(Outcome) %>%
+  summarise(
+    n_outcome = n_distinct(ID)
+  )
+
+plot_bar_outcome_sep <- ggplot(df_outcome, aes(x = reorder(Outcome, n_outcome), y = n_outcome)) + 
+  geom_col(
+    fill = 'blue',
+    width = 0.7
+  ) + 
+  theme_minimal()
+
+plot_bar_outcome_sep
+
+ggsave('Output/plot_bar_outcome_sep.jpeg', plot_bar_outcome_sep, width = 12, height = 7, dpi = 500)
