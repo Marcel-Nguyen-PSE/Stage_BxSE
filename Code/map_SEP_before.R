@@ -353,20 +353,20 @@ sep_cases <- df %>%
     year,
     Country_Claimants,
     Country_Defendants,
-    jurisdiction
+    court
   ) %>%
   filter(
     !is.na(year),
     !is.na(Country_Claimants),
     !is.na(Country_Defendants),
-    !is.na(jurisdiction)
+    !is.na(court)
   )
 
 claimant_edges <- sep_cases %>%
   group_by(
     year,
     Country_Claimants,
-    jurisdiction
+    court
   ) %>%
   summarise(
     n_cases = n_distinct(ID),
@@ -375,7 +375,7 @@ claimant_edges <- sep_cases %>%
   transmute(
     year,
     origin = Country_Claimants,
-    jurisdiction,
+    court,
     party_type = "Claimant",
     n_cases
   )
@@ -384,7 +384,7 @@ defendant_edges <- sep_cases %>%
   group_by(
     year,
     Country_Defendants,
-    jurisdiction
+    court
   ) %>%
   summarise(
     n_cases = n_distinct(ID),
@@ -393,7 +393,7 @@ defendant_edges <- sep_cases %>%
   transmute(
     year,
     origin = Country_Defendants,
-    jurisdiction,
+    court,
     party_type = "Defendant",
     n_cases
   )
@@ -416,11 +416,11 @@ claimant_nodes <- edges %>%
   )
 
 court_nodes <- edges %>%
-  distinct(jurisdiction) %>%
-  arrange(jurisdiction) %>%
+  distinct(court) %>%
+  arrange(court) %>%
   mutate(
-    node_id = paste0("court_", jurisdiction),
-    label = jurisdiction,
+    node_id = paste0("court_", court),
+    label = court,
     node_type = "UPC jurisdiction",
     x = 1,
     y = seq(
@@ -463,7 +463,7 @@ edges_plot <- edges %>%
       paste0("claimant_", origin),
       paste0("defendant_", origin)
     ),
-    court_id = paste0("court_", jurisdiction)
+    court_id = paste0("court_", court)
   ) %>%
   left_join(
     nodes %>%
