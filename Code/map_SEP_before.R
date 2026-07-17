@@ -537,7 +537,7 @@ flow_network <- ggplot() +
   ),
   hjust = 1,
   nudge_x = -0.06,
-  family = "bold",
+  family = "sans",
   size = 2.8
 ) +
   geom_text(
@@ -550,7 +550,7 @@ flow_network <- ggplot() +
   ),
   hjust = 0,
   nudge_x = 0.06,
-  family = "mono",
+  family = "sans",
   size = 2,
   fontface = "bold"
 ) +
@@ -564,7 +564,7 @@ flow_network <- ggplot() +
   ),
   hjust = 0,
   nudge_x = 0.06,
-  family = "bold",
+  family = "sans",
   size = 2.8
 ) +
   facet_wrap(
@@ -626,3 +626,11 @@ flow_network <- ggplot() +
   )
 
 flow_network
+
+ggsave('Output/map_geo_sep.jpeg',
+        flow_network,
+        width = 12,
+        height = 7,
+        dpi = 500
+)
+
