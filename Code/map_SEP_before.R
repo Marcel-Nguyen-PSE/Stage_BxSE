@@ -283,12 +283,19 @@ top_5_firms <- df_firms %>%
   arrange(desc(n_by_firms)) %>%
   slice_max(n_by_firms, n = 5)
 
-plot_bar_top5_sep_firms <- ggplot(top_5_firms, aes(x = reorder(Claimants, n_by_firms), y = n_by_firms)) +
+plot_bar_top5_sep_firms <- ggplot(top_5_firms, aes(x = reorder(Claimants, -n_by_firms), y = n_by_firms)) +
   geom_col(
-    fill = 'blue',
-    width = 0.7
+    fill = '#003A70',
+    width = 0.4
   ) + 
-  theme_minimal()
+  theme_minimal() + 
+  theme(
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank(),
+    panel.grid.major.x = element_blank(),
+    panel.grid.minor.x = element_blank(),
+    panel.grid.minor.y = element_blank()
+  )
 
 plot_bar_top5_sep_firms
 
@@ -309,10 +316,10 @@ top_5_sectors <- df %>%
   ) %>%
   slice_max(n_by_sector, n = 5)
 
-plot_bar_top5_sep_sector <- ggplot(top_5_sectors, aes(x = reorder(Technology_35_classes, n_by_sector), y = n_by_sector)) + 
+plot_bar_top5_sep_sector <- ggplot(top_5_sectors, aes(x = reorder(Technology_35_classes, -n_by_sector), y = n_by_sector)) + 
   geom_col(
-    fill = 'blue',
-    width = 0.7
+    fill = '#003A70',
+    width = 0.4
   ) + 
   theme_minimal()
 
@@ -364,18 +371,55 @@ top_5_firms <- df_firms %>%
   arrange(desc(n_by_firms_def)) %>%
   slice_max(n_by_firms_def, n = 5)
 
-plot_bar_top5_sep_firms_def <- ggplot(top_5_firms, aes(x = reorder(Defendants, n_by_firms_def), y = n_by_firms_def)) +
+plot_bar_top5_sep_firms_def <- ggplot(top_5_firms, aes(x = reorder(Defendants, -n_by_firms_def), y = n_by_firms_def)) +
   geom_col(
-    fill = 'blue',
-    width = 0.7
+    fill = '#003A70',
+    width = 0.4
   ) + 
-  theme_minimal()
+  theme_minimal() +
+  theme(
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank(),
+    panel.grid.major.x = element_blank(),
+    panel.grid.minor.x = element_blank(),
+    panel.grid.minor.y = element_blank()
+  )
 
 plot_bar_top5_sep_firms_def
 
 ggsave(
   'Output/plot_bar_top5_sep_firms_defendants.jpeg',
   plot_bar_top5_sep_firms_def,
+  width = 12,
+  height = 7,
+  dpi = 500
+)
+
+# Final plot : claim + def ---- 
+
+plot_bar_top5_sep_firms <- plot_bar_top5_sep_firms + 
+  theme(
+    axis.text.x = element_text(
+      angle = 45,
+      hjust = 1
+    )
+  ) 
+
+plot_bar_top5_sep_firms_def <- plot_bar_top5_sep_firms_def + 
+  theme(
+    axis.text.x = element_text(
+      angle = 45, 
+      hjust = 1
+    )
+  )
+
+plot_bar_top5_sep_def_claim <- plot_bar_top5_sep_firms | plot_bar_top5_sep_firms_def 
+
+plot_bar_top5_sep_def_claim
+
+ggsave(
+  'Output/top5_sep_claim_def.jpeg',
+  plot_bar_top5_sep_def_claim, 
   width = 12,
   height = 7,
   dpi = 500
@@ -604,7 +648,7 @@ flow_network <- ggplot() +
       label = label
     ),
     hjust = 1,
-    nudge_x = -0.12,   # increased distance
+    nudge_x = -0.12,
     family = "sans",
     size = 2.8
   ) +
@@ -712,7 +756,7 @@ df_outcome <- df %>%
     n_outcome = n_distinct(ID)
   )
 
-plot_bar_outcome_sep <- ggplot(df_outcome, aes(x = reorder(Outcome, n_outcome), y = n_outcome)) + 
+plot_bar_outcome_sep <- ggplot(df_outcome, aes(x = reorder(Outcome, -n_outcome), y = n_outcome)) + 
   geom_col(
     fill = 'blue',
     width = 0.7
@@ -722,3 +766,4 @@ plot_bar_outcome_sep <- ggplot(df_outcome, aes(x = reorder(Outcome, n_outcome), 
 plot_bar_outcome_sep
 
 ggsave('Output/plot_bar_outcome_sep.jpeg', plot_bar_outcome_sep, width = 12, height = 7, dpi = 500)
+
