@@ -96,7 +96,7 @@ plot_sep_nsep_month <- ggplot(data = df, aes(x = Date)) +
       data = df, 
       aes(y = n_actions_nsep),
       linewidth = 1.2,
-      color = '#0B5CAB'
+      color = '#6BAED6'
   ) + 
     scale_x_date(
       date_breaks = '3 months',
@@ -398,10 +398,20 @@ ggsave(
 # Final plot : claim + def ---- 
 
 plot_bar_top5_sep_firms <- plot_bar_top5_sep_firms + 
+  geom_text(
+    aes(
+      label = n_by_firms
+    ),
+    vjust = 2.5,
+    size = 2,
+    color = 'white',
+    fontface = 'bold'
+  ) + 
   theme(
     axis.text.x = element_text(
       angle = 45,
-      hjust = 1
+      hjust = 1,
+      fill = 'white'
     )
   ) 
 
@@ -411,7 +421,16 @@ plot_bar_top5_sep_firms_def <- plot_bar_top5_sep_firms_def +
       angle = 45, 
       hjust = 1
     )
-  )
+  ) + 
+  geom_text(
+    aes(
+      label = n_by_firms_def
+    ),
+    vjust = 2.5,
+    size = 2,
+    color = 'white',
+    fontface = 'bold'
+  ) 
 
 plot_bar_top5_sep_def_claim <- plot_bar_top5_sep_firms | plot_bar_top5_sep_firms_def 
 
@@ -675,7 +694,7 @@ flow_network <- ggplot() +
       label = label
     ),
     hjust = 0,
-    nudge_x = 0.12,    # increased distance
+    nudge_x = 0.12,   
     family = "sans",
     size = 2.8
   ) +
