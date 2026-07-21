@@ -38,6 +38,11 @@ library(scales)
 library(MatchIt)
 library(cobalt)
 library(ggh4x)
+library(rvest)
+library(purrr)
+library(httr2)
+library(jsonlite)
+library(stringr)
 
 df <- read_dta('Data/Data_SEP_FSA.dta')
 
@@ -444,7 +449,7 @@ ggsave(
   dpi = 500
 )
 
-# Geographic distribution of SEP
+# Geo Distribution of SEP ----
 
 sep_cases <- df %>%
   filter(SEP == 1) %>%
@@ -522,29 +527,6 @@ claimant_nodes <- edges %>%
     y = seq_len(n()) * 2
   )
 
-court_nodes <- edges %>%
-  distinct(court) %>%
-  arrange(court) %>%
-  mutate(
-    node_id = paste0("court_", court),
-    label = court,
-    node_type = "UPC jurisdiction",
-    x = 1,
-    y = seq(
-      from = 2,
-      to = max(c(
-        claimant_nodes$y,
-        seq_len(
-          edges %>%
-            filter(party_type == "Defendant") %>%
-            distinct(origin) %>%
-            nrow()
-        ) * 2
-      )),
-      length.out = n()
-    )
-  )
-
 defendant_nodes <- edges %>%
   filter(party_type == "Defendant") %>%
   distinct(origin) %>%
@@ -557,11 +539,47 @@ defendant_nodes <- edges %>%
     y = seq_len(n()) * 2
   )
 
+max_node_y <- max(
+  c(
+    claimant_nodes$y,
+    defendant_nodes$y
+  ),
+  na.rm = TRUE
+)
+
+court_nodes <- edges %>%
+  distinct(court) %>%
+  arrange(court) %>%
+  mutate(
+    node_id = paste0("court_", court),
+    label = court,
+    node_type = "UPC jurisdiction",
+    x = 1,
+    y = seq(
+      from = 2,
+      to = max_node_y,
+      length.out = n()
+    )
+  )
+
 nodes <- bind_rows(
   claimant_nodes,
   court_nodes,
   defendant_nodes
 )
+
+top3_jurisdictions <- edges %>%
+  group_by(court) %>%
+  summarise(
+    n_cases = sum(n_cases),
+    .groups = "drop"
+  ) %>%
+  slice_max(
+    order_by = n_cases,
+    n = 3,
+    with_ties = FALSE
+  ) %>%
+  pull(court)
 
 edges_plot <- edges %>%
   mutate(
@@ -591,10 +609,10 @@ edges_plot <- edges %>%
     by = "court_id"
   ) %>%
   mutate(
-    edge_colour = ifelse(
+    edge_colour = if_else(
       court %in% top3_jurisdictions,
       party_type,
-      'Other'
+      "Other"
     )
   )
 
@@ -605,25 +623,15 @@ years <- tibble(
   )
 )
 
-top3_jurisdictions <- edges_plot %>%
-  group_by(court) %>%
-  summarise(
-    n_cases = sum(n_cases),
-    .groups = "drop"
-  ) %>%
-  slice_max(
-    order_by = n_cases,
-    n = 3,
-    with_ties = FALSE
-  ) %>%
-  pull(court)
-
-nodes_by_year <- nodes_by_year %>%
+nodes_by_year <- tidyr::crossing(
+  nodes,
+  years
+) %>%
   mutate(
     node_colour = case_when(
       node_type != "UPC jurisdiction" ~ node_type,
-      label %in% top3_jurisdictions   ~ "Top 3 jurisdiction",
-      TRUE                            ~ "Other jurisdiction"
+      label %in% top3_jurisdictions ~ "Top 3 jurisdiction",
+      TRUE ~ "Other jurisdiction"
     )
   )
 
@@ -785,4 +793,14 @@ plot_bar_outcome_sep <- ggplot(df_outcome, aes(x = reorder(Outcome, -n_outcome),
 plot_bar_outcome_sep
 
 ggsave('Output/plot_bar_outcome_sep.jpeg', plot_bar_outcome_sep, width = 12, height = 7, dpi = 500)
+
+# Firm characteristics of SEP claimants and defendants (and N-SEP) ----
+
+claim_firms <- df %>%
+  distinct(Claimants, year)
+
+def_firms <- df %>%
+  distinct(Defendants, year)
+
+
 
