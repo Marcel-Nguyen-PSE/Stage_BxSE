@@ -1,0 +1,315 @@
+\documentclass[12pt]{article}
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,      
+    urlcolor=blue,
+    citecolor=blue,
+}
+\usepackage[margin=1in]{geometry}
+\usepackage{graphicx, booktabs, amsmath, xcolor, url, natbib}
+\usepackage[toc,page]{appendix}
+\bibliographystyle{ecta}
+\bibpunct{(}{)}{;}{}{,}{,} 
+\usepackage{natbib}
+\usepackage{authblk}
+\usepackage{changepage}
+
+\let\OLDthebibliography\thebibliography
+\renewcommand{\thebibliography}[1]{
+\OLDthebibliography{#1}
+\setlength{\parskip}{0pt}
+\setlength{\itemsep}{0pt plus 0.3ex}
+}
+\newlength{\offsetpage}
+\setlength{\offsetpage}{1.3in}
+\newenvironment{widepage}{\begin{adjustwidth}{-\offsetpage}{-\offsetpage}%
+    \addtolength{\textwidth}{2\offsetpage}}%
+{\end{adjustwidth}}
+
+
+\title{SEP Litigation Before the Unified Patent Court\\
+\large An Empirical Assessment of Litigation Patterns and Strategic Assertion}
+\author{Valerio Sterzi}
+\affil{\small Bordeaux School of Economics, University of Bordeaux}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+
+
+\section*{Introduction and Motivation}
+
+The launch of the Unified Patent Court (UPC) in June 2023 has transformed the landscape of patent enforcement in Europe. For the first time, patent holders can seek injunctions and damages through a single judicial proceeding capable of producing effects across multiple European jurisdictions. While the UPC aims to reduce fragmentation and improve legal certainty, it also creates new strategic opportunities for patent enforcement.
+
+These developments are particularly important in the context of Standard Essential Patents (SEPs). Because implementers often make substantial sunk investments before a patent dispute arises, the possibility of obtaining broad injunctive relief has long raised concerns regarding patent hold-up and excessive bargaining pressure. Such concerns have become increasingly relevant in ongoing discussions surrounding the application of proportionality principles under the Intellectual Property Rights Enforcement Directive (IPRED).
+
+Despite the policy relevance of these issues, there is currently little systematic evidence regarding the characteristics of SEP litigation before the UPC. Existing debates are largely informed by evidence from national courts, the United States, or individual case studies. To date, no comprehensive empirical study has examined whether SEP litigation before the UPC exhibits characteristics commonly associated in the literature with strategic patent assertion.
+
+The proposed report aims to fill this gap.
+
+Using original data collected through the \href{https://upcdashboard.wordpress.com/}{UPCTrack} project, developed at the University of Bordeaux, the study will provide the first comprehensive empirical assessment of litigation before the UPC (including SEP cases).
+
+Importantly, the objective is not to determine whether individual cases constitute patent hold-up, a phenomenon that is inherently difficult to observe directly. Instead, the report will examine whether SEP litigation before the UPC exhibits characteristics that the academic literature has associated with strategic patent assertion. These characteristics include NPE involvement, patent privateering, repeated assertion campaigns, litigation directed at downstream implementers, the assertion of older or lower-value patents, and litigation patterns indicative of heightened settlement pressure.
+
+
+\subsection*{Data}
+
+The report will rely on the \href{https://upcdashboard.wordpress.com/}{UPCTrack} database, a unique dataset collecting and coding all infringement actions filed before the UPC since its creation.
+
+The database combines information at three levels:
+
+\begin{itemize}
+\item \textbf{Litigation level}: infringement actions and provisional measures, including filing dates, divisions, litigation outcomes, settlements, withdrawals, and case duration.
+\item \textbf{Patent level}: filing and grant dates, technology field, declared SEP status, patent ownership history, and patent quality indicators (family size, forward citations, and composite quality measures).
+\item \textbf{Firm level}: identification and harmonisation of plaintiff and defendant names, determination of NPE status, revenues, industry classification, and other firm-specific characteristics.
+\end{itemize}
+
+For the purposes of this project, the existing database will be further enriched with additional information relevant to the analysis of SEP litigation. This may include, among other variables, business descriptions of litigating firms, indicators of firms' position within the value chain, additional information on patent ownership transfers, and other case-specific characteristics required to construct the indicators developed in the report.
+
+The analysis will cover all infringement actions filed before the UPC between June 2023 and May 2026, corresponding to the Court's first three years of operation.
+
+
+\section*{Part I: Mapping SEP Litigation Before the UPC}
+
+The first part of the report will provide a comprehensive descriptive analysis of SEP litigation before the Unified Patent Court during its first three years of operation. The objective is to document how SEP disputes have developed since the launch of the UPC and to identify the main characteristics of the emerging litigation landscape.
+
+The analysis will examine the volume and evolution of SEP infringement actions over time, their distribution across UPC divisions, and the identity of the principal litigants. Particular attention will be devoted to the profile of SEP plaintiffs and defendants, including the relative importance of practicing entities and non-practicing entities, the industrial characteristics of litigating firms, and the size distribution of defendants. The report will also investigate the geographic distribution of litigants and the extent to which SEP litigation is concentrated among a limited number of repeat players.
+
+In addition, the report will analyze litigation outcomes and duration. This includes the prevalence of settlements, withdrawals, claimant victories, and claimant defeats, as well as the time required to resolve disputes. Where appropriate, the analysis will distinguish between different categories of plaintiffs and defendants in order to identify emerging patterns in SEP enforcement and dispute resolution.
+
+Illustrative figures and tables may include:
+
+\begin{itemize}
+\item Monthly evolution of SEP infringement actions
+\item Share of SEP cases among all UPC infringement actions
+\item Distribution of SEP disputes across UPC divisions\footnote{Preliminary figures indicate a notably high share of SEP cases being brought before the German divisions of the UPC. Whereas around 69\% of non-SEP infringement actions are initiated in Germany, this proportion increases to nearly 85\% for SEP-related disputes. This distribution aligns with Germany’s long-standing role as a key forum for SEP litigation and likely reflects parties’ preference for experienced patent judges, well-established litigation practices, and the prospect of obtaining injunctive relief.}
+\item Leading SEP plaintiffs and defendants
+\item Geographic distribution of litigants\footnote{Preliminary evidence from the UPCTrack database suggests that SEP litigation before the UPC is characterized by a marked international asymmetry. SEP plaintiffs are concentrated in countries that host major technology licensors and SEP owners, including Japan, the United States, the Netherlands, Finland, and Sweden, whereas defendants are disproportionately located in countries that play a major role in the manufacturing and commercialization of standardized products, notably China, Germany, and the United States. The resulting pattern suggests that UPC SEP litigation is largely driven by disputes between firms specializing in the development and licensing of standardized technologies and firms engaged in the implementation of those technologies in downstream product markets.}
+\item Revenue and size distribution of defendant firms
+\end{itemize}
+
+By providing the first systematic overview of SEP litigation before the UPC, this section will establish the empirical context for the subsequent analysis of strategic assertion patterns and contribute to a better understanding of how the new European patent enforcement system is being used in practice.
+
+
+\section*{Part II: Does SEP Litigation Exhibit Characteristics Associated with Strategic Assertion?}
+
+The second part of the report will compare SEP and non-SEP litigation. The objective is not to determine whether individual cases constitute patent hold-up or abusive litigation. Rather, it is to examine whether SEP litigation displays characteristics that the economic and legal literature commonly associates with strategic patent assertion.
+
+In this context, strategic assertion refers to enforcement practices that seek to increase bargaining leverage beyond the intrinsic technological contribution of the asserted patent. Such strategies may involve the use of non-practicing entities, enforcement of older patents against firms that have already made substantial sunk investments, repeated assertion campaigns targeting multiple implementers, litigation directed at downstream actors with weaker bargaining positions, or the transfer of patents to specialized assertion entities. While none of these characteristics is individually sufficient to establish opportunistic behaviour, their prevalence may provide useful evidence on the incentives and enforcement dynamics associated with SEP litigation.
+
+The analysis will therefore compare SEP and non-SEP litigation along six complementary dimensions. The six indicators should not be interpreted individually as evidence of opportunistic behaviour. Rather, they provide complementary perspectives on the extent to which SEP litigation before the UPC exhibits characteristics that the literature has associated with strategic patent assertion.
+
+
+\subsection*{1. NPE Participation, Patent Privateering and Selective Enforcement Delegation}
+
+The report will examine the role of non-practicing entities (NPEs) and the prevalence of potential patent privateering in UPC litigation. Because the contractual relationship between the original patent owner and the litigating NPE is generally unobservable, the analysis cannot directly identify privateering arrangements. Instead, it will focus on observable litigation patterns that are consistent with delegated patent assertion.
+
+\paragraph{NPE Participation}
+
+The report will first examine whether NPEs are disproportionately involved in SEP litigation. NPEs have attracted particular attention in the literature because their business model relies primarily on licensing and litigation rather than product-market participation. As a result, they may face different incentives from practicing entities when asserting patents.
+
+The analysis will compare the prevalence of NPE plaintiffs in SEP and non-SEP litigation:
+
+\[
+\Pr(NPE_i = 1 \mid SEP_i = 1)
+\]
+
+and
+
+\[
+\Pr(NPE_i = 1 \mid SEP_i = 0)
+\]
+
+where \(NPE_i\) indicates whether the plaintiff in case \(i\) is classified as a non-practicing entity.
+
+\paragraph{Potential Privateering Indicator}
+
+The second step focuses on potential patent privateering. For each patent litigated by an NPE, the report will reconstruct the ownership history of the asserted patent and identify whether the previous owner was an operating company. It will also measure the time elapsed between the transfer and the initiation of litigation.
+
+The intuition is that transfers from operating companies to NPEs followed by litigation within a relatively short period of time are more likely to reflect enforcement-oriented transactions than ordinary technology transfers. To capture this phenomenon, the report will construct a simple privateering score:
+
+\[
+PrivateeringScore_p =
+OwnerTransfer_p + RecentTransfer_p
+\]
+
+where \(OwnerTransfer_p\) equals one when the patent was acquired from an operating company and \(RecentTransfer_p\) equals one when litigation is initiated within a predefined period following the transfer (e.g. two years). Higher values of the score indicate litigation patterns that are more consistent with enforcement-oriented patent transfers.
+
+\paragraph{Selective Enforcement Delegation}
+
+The third step investigates a more specific form of potential privateering: \emph{selective enforcement delegation}. The underlying idea is that an operating company may transfer only a subset of its patents to a specialized assertion entity while continuing to enforce other related patents directly. Rather than exiting patent monetization altogether, the original owner remains active in licensing and enforcement while delegating the assertion of selected assets to a third party.
+
+To identify such situations, the analysis will examine whether operating companies that transfer patents to NPEs continue to appear as plaintiffs in UPC litigation involving patents belonging to the same IPC technology class. The coexistence of direct and delegated enforcement may be indicative of a deliberate partitioning of enforcement activities within a broader patent portfolio.
+
+To operationalize this concept, the report will construct the following indicator:
+
+\[
+Delegation_k =
+\begin{cases}
+1 & \text{if operating company } k \text{ transfers one or more patents to an NPE} \\
+  & \text{and simultaneously litigates patents in the same IPC class before the UPC,} \\
+0 & \text{otherwise.}
+\end{cases}
+\]
+
+The indicator takes the value \(1\) when an operating company transfers one or more patents to an NPE while continuing to litigate patents belonging to the same IPC technology class before the UPC. Although this pattern does not establish the existence of a privateering agreement, it identifies situations in which direct and delegated enforcement coexist within the same technological area. Such coexistence is more consistent with selective enforcement delegation than with a complete divestiture of patent assets and may therefore provide suggestive evidence of patent privateering.
+
+The results will be summarized through a set of progressively more restrictive indicators, reported separately for SEP and non-SEP litigation.
+
+
+\begin{table}[htbp]
+\centering
+\caption{Indicators consistent with patent privateering}
+\label{tab:privateering}
+\begin{tabular}{lcc}
+\toprule
+Indicator & SEP (\%) & Non-SEP (\%) \\
+\midrule
+1. NPE plaintiff & & \\
+2. Transferred from operating company within 2 years of litigation & & \\
+3. Selective enforcement delegation & & \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+
+
+
+Together, these indicators provide complementary evidence on the extent to which SEP litigation before the UPC may involve delegated assertion strategies and litigation patterns consistent with patent privateering.
+
+
+
+\subsection*{2. Patent Quality}
+
+A recurring concern in the strategic assertion literature is that litigation may disproportionately rely on patents of lower economic value".
+The report will compare the quality of asserted SEP and non-SEP patents using patent quality indicators normalized by filing year and technology field.
+The analysis will assess whether SEP patents asserted before the UPC are systematically stronger or weaker than comparable non-SEP patents.
+
+\subsection*{3. Patent Age}
+
+The literature on patent hold-up frequently emphasizes the role of mature technologies and sunk investments. The report will examine whether asserted SEP patents are older than comparable non-SEP patents and whether NPEs tend to litigate particularly old patents. Patent age may provide insight into the extent to which litigation occurs after standards have become widely adopted and implementation investments have already been made.
+
+\subsection*{4. Repeated Assertion Campaigns}
+
+The report will investigate whether SEP litigation is characterized by repeated assertion behavior. The analysis will measure the frequency with which the same patent is asserted against multiple defendants and the frequency with which the same plaintiff initiates infringement actions against multiple implementers. Particular attention will be devoted to clustered filing strategies in which several actions are initiated within a relatively short period of time. The prevalence of such assertion campaigns will be compared between SEP and non-SEP litigation.
+
+
+This includes:
+
+\begin{itemize}
+\item Repeated litigation involving the same patent.
+\item Repeated litigation initiated by the same plaintiff.
+\item Systematic enforcement campaigns targeting multiple implementers.
+\end{itemize}
+
+
+
+\subsection*{5. Supply-Chain Litigation}
+
+Recent scholarship has highlighted the possibility that patent holders may strategically target downstream firms within the value chain rather than principal manufacturers. Such strategies may increase bargaining pressure because downstream actors often possess limited technological capabilities, weaker patent portfolios, and reduced incentives to engage in lengthy litigation.
+
+The report will investigate whether SEP litigation before the UPC is disproportionately directed toward downstream implementers. Particular attention will be paid to distributors, retailers, importers, service providers, and other firms that commercialize products incorporating standardized technologies without necessarily participating in their development.
+
+For each defendant (i), the analysis will classify its position within the value chain:
+
+\[
+Downstream_i =
+\begin{cases}
+1 & \text{if the defendant is a distributor, retailer, importer,} \\
+  & \text{or other downstream commercial actor,} \\
+0 & \text{otherwise.}
+\end{cases}
+\]
+
+
+Defendant firms will be classified according to their position in the value chain using company descriptions obtained from public sources and commercial databases. Classification will combine AI-assisted text analysis with manual validation. Firms will be assigned to categories such as technology supplier, component supplier, device manufacturer, distributor, retailer, and service provider.
+
+The report will then compare the distribution of defendants across value-chain positions in SEP and non-SEP litigation. In particular, it will estimate:
+
+The report will compare:
+
+\[
+\Pr(Downstream_i = 1 \mid SEP_i = 1)
+\quad \text{and} \quad
+\Pr(Downstream_i = 1 \mid SEP_i = 0),
+\]
+
+
+A higher prevalence of downstream defendants in SEP litigation would be consistent with enforcement strategies that exploit asymmetries in bargaining power along the value chain and may provide evidence of litigation pressure being directed toward actors with limited ability to challenge patent assertions.
+
+
+
+\subsection*{6. Settlement Pressure and Litigation Outcomes}
+
+A central concern in the literature on patent hold-up is that the threat of litigation may affect bargaining outcomes even when disputes never reach a judicial decision. In particular, the combination of litigation costs, uncertainty regarding outcomes, and the possibility of injunctive relief may create incentives for implementers to settle disputes before the merits of the case are adjudicated. For this reason, the pattern of litigation outcomes may provide useful information about the dynamics of SEP enforcement.
+
+The report will therefore examine the outcomes of closed UPC infringement actions involving SEP and non-SEP patents. Cases will be classified according to whether they result in settlement, withdrawal, a claimant victory, or a claimant defeat. Particular attention will be devoted to differences between disputes initiated by practicing entities (PEs) and non-practicing entities (NPEs).
+
+The analysis will compare:
+
+\[
+\Pr(Settlement \mid SEP)
+\]
+
+and
+
+\[
+\Pr(Settlement \mid NonSEP)
+\]
+
+
+as well as corresponding probabilities for claimant victories and claimant defeats.
+
+In addition, the report will compare outcome distributions across plaintiff types:
+
+\[
+\Pr(Settlement \mid SEP, NPE)
+\]
+
+and
+
+\[
+\Pr(Settlement \mid SEP, PE)
+\]
+
+
+
+While settlement cannot be interpreted as direct evidence of patent hold-up, systematic differences in settlement rates may provide useful insights into the bargaining environment surrounding SEP enforcement before the UPC.\footnote{Preliminary evidence from the UPCTrack database suggests substantial differences in litigation outcomes across case types. Among closed SEP disputes, settlement rates appear considerably higher than in non-SEP litigation. Moreover, settlement patterns differ markedly across plaintiff types: while approximately 94\% of closed SEP cases initiated by practicing entities (PEs) end in settlement, the corresponding figure is around 57\% for cases initiated by non-practicing entities (NPEs), with the remaining NPE cases resulting primarily in claimant defeats. These preliminary findings motivate a more systematic analysis of settlement dynamics and litigation outcomes in the final report.}
+
+
+
+\section*{Terms and Conditions}
+
+\subsection*{Project Duration and deliverables}
+
+The project is expected to be completed within \textbf{three months} from the start date agreed by the parties.
+
+\vspace{0.5cm}
+The project will produce:
+\begin{itemize}
+\item A cleaned analytical dataset derived from the UPCTrack database and used for the empirical analysis
+\item A cleaned code (STATA) to replicate tables and figures
+\item A research report of approximately \textbf{25--30 pages} 
+\end{itemize}
+
+
+\subsection*{Project Fee}
+The fixed fee for the project is €10,000 (\emph{TVA non applicable, art. 293 B du CGI}).
+The fee reflects the use and further development of the \href{https://upcdashboard.wordpress.com/}{UPCTrack} database, including the collection and coding of additional information on litigants, patents, and ownership transfers, the construction of new analytical variables, the empirical analysis, and the preparation of the final report and supporting materials. 
+
+
+\medskip
+
+
+
+
+\subsection*{Confidentiality and Independence}
+
+The study will be conducted independently by the author. While the Fair Standards Alliance may provide comments on factual accuracy and policy relevance, the empirical analysis, interpretation of the results, and conclusions presented in the report will remain entirely the responsibility of the author.
+
+
+\end{document}
