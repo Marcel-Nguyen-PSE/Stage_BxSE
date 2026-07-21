@@ -116,14 +116,6 @@ quarterly_juris <- df %>%
     highlight = share_sep == 1
   )
 
-ggsave(
-  'Output/plot_share_juris.jpeg',
-  plot_share_juris, 
-  width = 12, 
-  height = 7,
-  dpi = 500
-)
-
 plot_share_juris_sup0 <- ggplot(
   quarterly_juris %>% 
     group_by(jurisdiction) %>%
