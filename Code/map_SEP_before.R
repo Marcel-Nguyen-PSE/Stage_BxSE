@@ -495,7 +495,7 @@ plot_df_sep_sector <- ggplot(plot_df_sector,
     y = NULL,
     fill = NULL
   ) +
-  theme_bw(base_size = 13) +
+  theme_minimal() +
   theme(
     legend.position = "top",
     strip.background = element_rect(fill = "grey95"),
