@@ -216,14 +216,6 @@ plot_bar_top5_sep_firms <- ggplot(top_5_firms, aes(x = reorder(Claimants, -n_by_
 
 plot_bar_top5_sep_firms
 
-ggsave(
-  'Output/plot_bar_top5_sep_firms_claimants.jpeg',
-  plot_bar_top5_sep_firms,
-  width = 12,
-  height = 7,
-  dpi = 500
-)
-
 # Top and Bottom SEP Firms infringements (Defendants) ----
 
 df_firms <- df %>%
@@ -253,14 +245,6 @@ plot_bar_top5_sep_firms_def <- ggplot(top_5_firms, aes(x = reorder(Defendants, -
   )
 
 plot_bar_top5_sep_firms_def
-
-ggsave(
-  'Output/plot_bar_top5_sep_firms_defendants.jpeg',
-  plot_bar_top5_sep_firms_def,
-  width = 12,
-  height = 7,
-  dpi = 500
-)
 
 # Final plot : claim + def ---- 
 
