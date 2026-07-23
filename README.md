@@ -27,7 +27,7 @@
 
 ![SEP outcome distribution across sectors and jurisdictions](Output/outcome_plot_court.jpeg)
 
-*SEP litigation is highly concentrated among a small group of repeat litigants: Panasonic initiated the largest number of cases (18), while Xiaomi was the most frequently sued company (20).*
+*SEP litigation is concentrated among a small group of repeat litigants: Panasonic initiated the largest number of cases (18), while Xiaomi was the most frequently sued company (20).*
 
 ![Leading Claimants and Defendants in SEP cases](Output/top5_sep_claim_def.jpeg)
 
