@@ -578,3 +578,53 @@ heatmap_quality <- ggplot(
   )
 
 ggsave('Output/heatmap_sector.jpeg', heatmap_quality, width = 12, height = 7, dpi = 500)
+
+df2 <- read_dta('Data/Data_SEP_FSA2.dta')
+
+df_sep <- df2 %>%
+  filter(SEP_REVIEW == 1)
+
+df2_sdo <- df2 %>%
+  filter(SEP == 1, !is.na(SDO)) %>%
+  distinct(ID, SDO) %>%
+  count(SDO, sort = TRUE) 
+
+# Bar plot of SDO categories (aggregate) ---- 
+
+plot_sdo <- ggplot(df2_sdo, aes(x = n, y = reorder(SDO, n))) +
+            geom_col() +
+            theme_minimal()
+
+ggsave('Output/plot_sdo_sep.jpeg', width = 12, height = 7, dpi = 500)
+
+# Bar plot of SDO categories (across jurisdictions)
+
+plot_sdo <- df2 %>%
+  filter(SEP == 1, !is.na(SDO)) %>%   
+  distinct(ID, court, SDO) %>%     
+  count(court, SDO)
+
+sdo_plot <- ggplot(
+  plot_sdo,
+  aes(
+    x = n,
+    y = reorder(SDO, n)
+  )
+) +
+  geom_col(fill = "grey35") +
+  facet_wrap(~court) +
+  labs(
+    x = "Number of SEP cases",
+    y = NULL
+  ) +
+  theme_minimal() +
+  theme(
+    strip.background = element_rect(fill = "grey95"),
+    strip.text = element_text(face = "plain"),
+    legend.position = "none"
+  )
+
+sdo_plot
+
+ggsave('Output/plot_df_sep_sdo.jpeg', sdo_plot, width = 12, height = 7, dpi = 500)
+
