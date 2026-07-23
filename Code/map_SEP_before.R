@@ -151,7 +151,7 @@ plot_share_juris_sup0 <- ggplot(
   ) +
   scale_fill_manual(
     values = c(
-      'TRUE' = '#0B5CAB',
+      'TRUE' = '#003A70',
       'FALSE' = '#003A70'
     )
   ) + 
