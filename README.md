@@ -7,6 +7,7 @@
 ![Monthly Trend of SEP and N-SEP 2023-2026](Output/plot_sep_nsep_month.jpeg)
 
 *SEP disputes accounted for nearly one-third (29.2%) of all patent litigation before the three major German patent courts over the study period.*
+*Note: jurisdictions with null SEP cases have been removed from the plot for readability*
 
 ![SEP share quarterly trend across jurisdictions](Output/plot_share_juris_sup0.jpeg)
 
@@ -21,4 +22,10 @@
 *Compared with non-SEP litigation, SEP cases involve a higher proportion of PAEs (26.0% v. 11.1%), while non-SEP cases are dominated by downstream operating firms*
 
 ![SEP distribution across sectors and jurisdictions](Output/heatmap_sector.jpeg)
+
+*Only about 5% of SEP disputes results in a judicial decision, with the remaining ending in settlement or having no publicly available outcome.*
+
+![SEP outcome distribution across sectors and jurisdictions](Output/outcome_plot_court.jpeg)
+
+
 

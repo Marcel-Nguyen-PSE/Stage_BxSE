@@ -628,6 +628,8 @@ sdo_plot
 
 ggsave('Output/plot_df_sep_sdo.jpeg', sdo_plot, width = 12, height = 7, dpi = 500)
 
+# Summary Statistics ---- 
+
 df %>%
   filter(court %in% c("Munich","Mannheim","Düsseldorf")) %>%
   summarise(
@@ -638,4 +640,12 @@ df %>%
   group_by(SEP) %>%
   summarise(
     pae_share = 100 * n_distinct(ID[Type == 'PAE']) / n_distinct(ID)
+  )
+
+df %>%
+  filter(SEP == 1) %>%
+  summarise(
+    total_cases = n(),
+    judgments = sum(Outcome %in% c("Claimant", "Defendant")),
+    judgment_share = 100 * judgments / total_cases
   )
