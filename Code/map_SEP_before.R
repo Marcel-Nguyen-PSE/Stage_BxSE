@@ -175,7 +175,7 @@ ggsave(
   plot_share_juris_sup0,
   width = 12, 
   height = 7, 
-  dpi = 500
+  dpi = 501
 )
 
 # Top and Bottom SEP Firms infringements (Claimants) ----
