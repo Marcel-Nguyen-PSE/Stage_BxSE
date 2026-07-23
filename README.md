@@ -31,5 +31,8 @@
 
 ![Leading Claimants and Defendants in SEP cases](Output/top5_sep_claim_def.jpeg)
 
+*ETSI accounts for 65.4% of all identified SEP cases, with Munich and Mannheim serving as the primary litigation courts.*
+![Bar plot of the SDO type amongst SEP cases](Output/plot_df_sep_sdo.jpeg)
+
 
 

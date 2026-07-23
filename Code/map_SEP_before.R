@@ -579,6 +579,8 @@ heatmap_quality <- ggplot(
 
 ggsave('Output/heatmap_sector.jpeg', heatmap_quality, width = 12, height = 7, dpi = 500)
 
+# SDO Categories ----
+
 df2 <- read_dta('Data/Data_SEP_FSA2.dta')
 
 df_sep <- df2 %>%
@@ -595,7 +597,7 @@ plot_sdo <- ggplot(df2_sdo, aes(x = n, y = reorder(SDO, n))) +
             geom_col() +
             theme_minimal()
 
-ggsave('Output/plot_sdo_sep.jpeg', width = 12, height = 7, dpi = 500)
+ggsave('Output/plot_sdo_sep_agg.jpeg', width = 12, height = 7, dpi = 500)
 
 # Bar plot of SDO categories (across jurisdictions)
 
@@ -649,3 +651,11 @@ df %>%
     judgments = sum(Outcome %in% c("Claimant", "Defendant")),
     judgment_share = 100 * judgments / total_cases
   )
+
+df2 %>%
+  filter(SEP == 1, !is.na(SDO)) %>%
+  distinct(ID, SDO) %>%
+  summarise(
+    etsi_share = 100 * mean(SDO == "ETSI")
+  )
+
