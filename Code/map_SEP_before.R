@@ -171,7 +171,7 @@ plot_share_juris_sup0 <- ggplot(
 plot_share_juris_sup0
 
 ggsave(
-  'Output/plot_share_juris_sup0v2.jpeg',
+  'Output/plot_share_juris_sup0.jpeg',
   plot_share_juris_sup0,
   width = 12, 
   height = 7, 
