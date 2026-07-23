@@ -633,3 +633,9 @@ df %>%
   summarise(
     sep_share = 100 * sum(ID[SEP == 1]) / sum(ID)
   )
+
+df %>%
+  group_by(SEP) %>%
+  summarise(
+    pae_share = 100 * n_distinct(ID[Type == 'PAE']) / n_distinct(ID)
+  )
