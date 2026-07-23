@@ -20,5 +20,5 @@
 
 *Compared with non-SEP litigation, SEP cases involve a higher proportion of PAEs (26.0% v. 11.1%), while non-SEP cases are dominated by downstream operating firms*
 
-![SEP distribution across sectors and jurisdictions](Output/plot_df_sep_sector.jpeg)
+![SEP distribution across sectors and jurisdictions](Output/heatmap_sector.jpeg)
 
