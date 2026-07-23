@@ -5,3 +5,7 @@
 *Monthly SEP case volumes exhibit a clear upward trajectory, reaching a peak in late 2025, whereas non-SEP litigation remains relatively stable at low levels*
 
 ![Monthly Trend of SEP and N-SEP 2023-2026](Output/plot_sep_nsep_month.jpeg)
+
+*SEP disputes accounted for nearly one-third (29.2%) of all patent litigation before the three major German patent courts over the study period.*
+
+![SEP share quarterly trend across jurisdictions](Output/plot_share_juris_sup0.jpeg)

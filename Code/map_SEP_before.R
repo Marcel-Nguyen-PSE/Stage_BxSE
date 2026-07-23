@@ -628,3 +628,8 @@ sdo_plot
 
 ggsave('Output/plot_df_sep_sdo.jpeg', sdo_plot, width = 12, height = 7, dpi = 500)
 
+df %>%
+  filter(court %in% c("Munich","Mannheim","Düsseldorf")) %>%
+  summarise(
+    sep_share = 100 * sum(ID[SEP == 1]) / sum(ID)
+  )
