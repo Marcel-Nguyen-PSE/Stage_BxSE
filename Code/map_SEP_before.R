@@ -180,12 +180,6 @@ ggsave(
 
 # Top and Bottom SEP Firms infringements (Claimants) ----
 
-df_firms <- df %>%
-  group_by(Claimants) %>%
-  summarise(
-    n_by_firms = n_distinct(ID[SEP == 1])
-  )
-
 npe_firms <- df %>%
   filter(NPE == 1) %>%
   distinct(Claimants) %>%
@@ -204,7 +198,6 @@ df_firms_claim <- df %>%
 
 top_10_claim <- df_firms_claim %>%
   slice_max(n_by_firms, n = 10, with_ties = FALSE)
-
 
 plot_bar_top10_sep_firms <- ggplot(
   top_10_claim,
@@ -227,10 +220,12 @@ plot_bar_top10_sep_firms <- ggplot(
       `FALSE` = "#003A70",
       `TRUE`  = "#0B5CAB"
     ),
+    breaks = c(FALSE, TRUE),
     labels = c(
       `FALSE` = "Operating company",
       `TRUE`  = "NPE"
     ),
+    drop = FALSE,
     name = NULL
   ) +
   theme_minimal() +
@@ -238,7 +233,8 @@ plot_bar_top10_sep_firms <- ggplot(
     axis.title = element_blank(),
     axis.text.x = element_text(angle = 45, hjust = 1),
     panel.grid.major.x = element_blank(),
-    panel.grid.minor = element_blank()
+    panel.grid.minor = element_blank(),
+    legend.position = "bottom"
   )
 
 df_firms_def <- df %>%
@@ -254,7 +250,6 @@ df_firms_def <- df %>%
 
 top_10_def <- df_firms_def %>%
   slice_max(n_by_firms_def, n = 10, with_ties = FALSE)
-
 
 plot_bar_top10_sep_firms_def <- ggplot(
   top_10_def,
@@ -277,10 +272,12 @@ plot_bar_top10_sep_firms_def <- ggplot(
       `FALSE` = "#003A70",
       `TRUE`  = "#0B5CAB"
     ),
+    breaks = c(FALSE, TRUE),
     labels = c(
       `FALSE` = "Operating company",
       `TRUE`  = "NPE"
     ),
+    drop = FALSE,
     name = NULL
   ) +
   theme_minimal() +
@@ -288,13 +285,19 @@ plot_bar_top10_sep_firms_def <- ggplot(
     axis.title = element_blank(),
     axis.text.x = element_text(angle = 45, hjust = 1),
     panel.grid.major.x = element_blank(),
-    panel.grid.minor = element_blank()
+    panel.grid.minor = element_blank(),
+    legend.position = "bottom"
   )
 
 plot_bar_top10_sep_def_claim <-
-  plot_bar_top10_sep_firms | plot_bar_top10_sep_firms_def
-
-plot_bar_top10_sep_def_claim
+  (plot_bar_top10_sep_firms | plot_bar_top10_sep_firms_def) +
+  plot_layout(guides = "collect") +
+  plot_annotation(
+    theme = theme(
+      legend.position = "bottom",
+      legend.justification = "center"
+    )
+  )
 
 ggsave(
   "Output/top10_sep_claim_def.jpeg",
@@ -675,4 +678,8 @@ df2 %>%
   summarise(
     etsi_share = 100 * mean(SDO == "ETSI")
   )
+
+# SDO / Firm Categories ----
+
+df_cat <- read_dta('Data/Data_SEP_FSA2_V2.dta')
 
