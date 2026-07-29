@@ -186,102 +186,119 @@ df_firms <- df %>%
     n_by_firms = n_distinct(ID[SEP == 1])
   )
 
-# Top 10 firms in SEP actions count (Claimants) ---- 
+npe_firms <- df %>%
+  filter(NPE == 1) %>%
+  distinct(Claimants) %>%
+  pull(Claimants)
 
-top_5_firms <- df_firms %>%
-  arrange(desc(n_by_firms)) %>%
-  slice_max(n_by_firms, n = 10)
-
-plot_bar_top5_sep_firms <- ggplot(top_5_firms, aes(x = reorder(Claimants, -n_by_firms), y = n_by_firms)) +
-  geom_col(
-    fill = '#003A70',
-    width = 0.4
-  ) + 
-  theme_minimal() + 
-  theme(
-    axis.title.x = element_blank(),
-    axis.title.y = element_blank(),
-    panel.grid.major.x = element_blank(),
-    panel.grid.minor.x = element_blank(),
-    panel.grid.minor.y = element_blank()
-  )
-
-plot_bar_top5_sep_firms
-
-# Top and Bottom SEP Firms infringements (Defendants) ----
-
-df_firms <- df %>%
-  group_by(Defendants) %>%
+df_firms_claim <- df %>%
+  filter(SEP == 1) %>%
+  group_by(Claimants) %>%
   summarise(
-    n_by_firms_def = n_distinct(ID[SEP == 1])
+    n_by_firms = n_distinct(ID),
+    .groups = "drop"
+  ) %>%
+  mutate(
+    NPE_firm = Claimants %in% npe_firms
   )
 
-# Top 10 firms in SEP actions count (Defendants) ---- 
+top_10_claim <- df_firms_claim %>%
+  slice_max(n_by_firms, n = 10, with_ties = FALSE)
 
-top_5_firms <- df_firms %>%
-  arrange(desc(n_by_firms_def)) %>%
-  slice_max(n_by_firms_def, n = 10)
 
-plot_bar_top5_sep_firms_def <- ggplot(top_5_firms, aes(x = reorder(Defendants, -n_by_firms_def), y = n_by_firms_def)) +
-  geom_col(
-    fill = '#003A70',
-    width = 0.4
-  ) + 
+plot_bar_top10_sep_firms <- ggplot(
+  top_10_claim,
+  aes(
+    x = reorder(Claimants, -n_by_firms),
+    y = n_by_firms,
+    fill = NPE_firm
+  )
+) +
+  geom_col(width = 0.4) +
+  geom_text(
+    aes(label = n_by_firms),
+    vjust = 2.5,
+    size = 2,
+    color = "white",
+    fontface = "bold"
+  ) +
+  scale_fill_manual(
+    values = c(
+      `FALSE` = "#003A70",
+      `TRUE`  = "#0B5CAB"
+    ),
+    labels = c(
+      `FALSE` = "Operating company",
+      `TRUE`  = "NPE"
+    ),
+    name = NULL
+  ) +
   theme_minimal() +
   theme(
-    axis.title.x = element_blank(),
-    axis.title.y = element_blank(),
+    axis.title = element_blank(),
+    axis.text.x = element_text(angle = 45, hjust = 1),
     panel.grid.major.x = element_blank(),
-    panel.grid.minor.x = element_blank(),
-    panel.grid.minor.y = element_blank()
+    panel.grid.minor = element_blank()
   )
 
-plot_bar_top5_sep_firms_def
+df_firms_def <- df %>%
+  filter(SEP == 1) %>%
+  group_by(Defendants) %>%
+  summarise(
+    n_by_firms_def = n_distinct(ID),
+    .groups = "drop"
+  ) %>%
+  mutate(
+    NPE_firm = Defendants %in% npe_firms
+  )
 
-# Final plot : claim + def ---- 
+top_10_def <- df_firms_def %>%
+  slice_max(n_by_firms_def, n = 10, with_ties = FALSE)
 
-plot_bar_top5_sep_firms <- plot_bar_top5_sep_firms + 
+
+plot_bar_top10_sep_firms_def <- ggplot(
+  top_10_def,
+  aes(
+    x = reorder(Defendants, -n_by_firms_def),
+    y = n_by_firms_def,
+    fill = NPE_firm
+  )
+) +
+  geom_col(width = 0.4) +
   geom_text(
-    aes(
-      label = n_by_firms
-    ),
+    aes(label = n_by_firms_def),
     vjust = 2.5,
     size = 2,
-    color = 'white',
-    fontface = 'bold'
-  ) + 
-  theme(
-    axis.text.x = element_text(
-      angle = 45,
-      hjust = 1,
-      fill = 'white'
-    )
-  ) 
-
-plot_bar_top5_sep_firms_def <- plot_bar_top5_sep_firms_def + 
-  theme(
-    axis.text.x = element_text(
-      angle = 45, 
-      hjust = 1
-    )
-  ) + 
-  geom_text(
-    aes(
-      label = n_by_firms_def
+    color = "white",
+    fontface = "bold"
+  ) +
+  scale_fill_manual(
+    values = c(
+      `FALSE` = "#003A70",
+      `TRUE`  = "#0B5CAB"
     ),
-    vjust = 2.5,
-    size = 2,
-    color = 'white',
-    fontface = 'bold'
-  ) 
+    labels = c(
+      `FALSE` = "Operating company",
+      `TRUE`  = "NPE"
+    ),
+    name = NULL
+  ) +
+  theme_minimal() +
+  theme(
+    axis.title = element_blank(),
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    panel.grid.major.x = element_blank(),
+    panel.grid.minor = element_blank()
+  )
 
-plot_bar_top5_sep_def_claim <- plot_bar_top5_sep_firms | plot_bar_top5_sep_firms_def 
+plot_bar_top10_sep_def_claim <-
+  plot_bar_top10_sep_firms | plot_bar_top10_sep_firms_def
 
-plot_bar_top5_sep_def_claim
+plot_bar_top10_sep_def_claim
 
 ggsave(
-  'Output/top5_sep_claim_def.jpeg',
-  plot_bar_top5_sep_def_claim, 
+  "Output/top10_sep_claim_def.jpeg",
+  plot_bar_top10_sep_def_claim,
   width = 12,
   height = 7,
   dpi = 500

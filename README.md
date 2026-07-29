@@ -29,7 +29,7 @@
 
 *SEP litigation is concentrated among a small group of repeat litigants: Panasonic initiated the largest number of cases (18), while Xiaomi was the most frequently sued company (20).*
 
-![Leading Claimants and Defendants in SEP cases](Output/top5_sep_claim_def.jpeg)
+![Leading Claimants and Defendants in SEP cases](Output/top10_sep_claim_def.jpeg)
 
 *ETSI accounts for 65.4% of all identified SEP cases, with Munich and Mannheim serving as the primary litigation courts.*
 ![Bar plot of the SDO type amongst SEP cases](Output/plot_df_sep_sdo.jpeg)
