@@ -683,3 +683,36 @@ df2 %>%
 
 df_cat <- read_dta('Data/Data_SEP_FSA2_V2.dta')
 
+df_share <- df_cat %>%
+  filter(
+    !is.na(Type),
+    !is.na(Category),
+    !is.na(SEP)
+  ) %>%
+  count(SEP, Type, Category, name = "n") %>%
+  group_by(SEP, Type) %>%
+  mutate(
+    share = n / sum(n),
+    SEP_status = if_else(SEP == 1, "SEP", "Non-SEP")
+  ) %>%
+  ungroup()
+
+plot_category_claim_def <- ggplot(
+  df_share,
+  aes(
+    x = Type,
+    y = share,
+    fill = Category
+  )
+) +
+  geom_col(width = 0.7) +
+  facet_wrap(~ SEP_status) +
+  scale_y_continuous(labels = percent_format()) +
+  labs(
+    x = "Claimant category",
+    y = "Share of defendant categories",
+    fill = "Defendant category"
+  ) +
+  theme_minimal()
+
+ggsave('Output/plot_category_claim_def.jpeg', plot_category_claim_def, width = 12, height = 7, dpi = 500)
