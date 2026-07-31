@@ -12,6 +12,7 @@ library(patchwork)
 library(stargazer)
 library(sandwich)
 library(lmtest)
+library(treemapify)
 library(AER)
 library(car)
 library(haven)
@@ -529,12 +530,6 @@ ggsave('Output/outcome_plot_court.jpeg', outcome_plot_court, width = 12, height 
 
 # Firm characteristics of SEP claimants and defendants (and N-SEP) by SECTOR ----
 
-library(dplyr)
-library(tidyr)
-library(ggplot2)
-library(treemapify)
-library(patchwork)
-
 sector_vars <- c("CHEMISTRY", "MECHANICAL", "ICT", "Instruments")
 
 sector_share <- df %>%
@@ -571,10 +566,22 @@ plot_sector_share <- ggplot(
 ) +
   geom_treemap(color = "white", linewidth = 1) +
   geom_treemap_text(
-    colour = "white",
-    place = "topleft",
-    grow = TRUE,
-    reflow = TRUE
+  colour = "white",
+  place = "topleft",
+  grow = FALSE,
+  reflow = TRUE,
+  min.size = 4,
+  fontsize = 6,
+  padding.x = grid::unit(2, "mm"),
+  padding.y = grid::unit(2, "mm")
+) +
+  scale_fill_manual(
+    values = c(
+      "ICT" = "#003A70",
+      "MECHANICAL" = "#0B5CAB",
+      "Instruments" = "#6BAED6",
+      "CHEMISTRY" = "#c5e5f8da"
+    )
   ) +
   labs(title = "Sector distribution") +
   theme_void() +
@@ -593,15 +600,19 @@ plot_ict_sep_share <- ggplot(
 ) +
   geom_treemap(color = "white", linewidth = 1) +
   geom_treemap_text(
-    colour = "white",
-    place = "topleft",
-    grow = TRUE,
-    reflow = TRUE
-  ) +
+  colour = "white",
+  place = "topleft",
+  grow = FALSE,
+  reflow = TRUE,
+  min.size = 4,
+  fontsize = 6,
+  padding.x = grid::unit(2, "mm"),
+  padding.y = grid::unit(2, "mm")
+) +
   scale_fill_manual(
     values = c(
       "SEP" = "#003A70",
-      "Non-SEP" = "#6BAED6"
+      "Non-SEP" = "#609ec2"
     )
   ) +
   labs(title = "SEP share within ICT cases") +
@@ -611,7 +622,11 @@ plot_ict_sep_share <- ggplot(
     plot.title = element_text(hjust = 0.5, face = "bold")
   )
 
-plot_sector_treemap <- plot_sector_share | plot_ict_sep_share
+plot_sector_treemap <-
+  plot_sector_share +
+  plot_spacer() +
+  plot_ict_sep_share +
+  plot_layout(widths = c(1, 0.05, 1))
 
 plot_sector_treemap
 
