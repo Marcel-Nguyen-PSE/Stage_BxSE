@@ -860,7 +860,7 @@ plot_category_claim_def <- ggplot(
     legend.position = 'bottom'
   ) +
 labs(
-  caption = "Note: 22 cases with empty defendant categories and 15 with empty claimants categories are omitted in this plot. Numeric values are not shown for shares inferior to 5%"
+  caption = "Note: 22 cases with empty defendant categories and 15 with empty claimants categories are omitted in this plot. Numeric values are not shown for shares inferior to 5%."
 ) + 
   theme(
   plot.caption = element_text(
