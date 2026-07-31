@@ -875,11 +875,6 @@ ggsave('Output/plot_category_claim_def.jpeg', plot_category_claim_def, width = 1
 
 df_sdo <- read_xlsx('Data/SEP_complete_with_standard_category - 25072026.xlsx')
 
-df_sep <- df_cat %>%
-  filter(SEP == 1) %>%
-  distinct(Patentnumber, SDO) %>%
-  left_join(df_sdo, by = 'Patentnumber')
-
 technology_share <- df_sdo %>%
   filter(!is.na(`Technology Category`)) %>%
   group_by(`Technology Category`) %>%
@@ -900,29 +895,6 @@ cellular_standard_share <- df_sdo %>%
     share = n / sum(n),
     label = paste0(Standard, "\n", round(100 * share, 1), "%")
   )
-
-pool_share <- df_sdo %>%
-  filter(
-    `Technology Category` == "Cellular",
-    !is.na(Standard)
-  ) %>%
-  mutate(
-    Pool_status = ifelse(
-      is.na(`Patent Pool Administrator`) |
-        `Patent Pool Administrator` == "" |
-        `Patent Pool Administrator` == "NA",
-      "No patent pool",
-      "Patent pool"
-    )
-  ) %>%
-  group_by(Standard, Pool_status) %>%
-  summarise(n = n(), .groups = "drop") %>%
-  group_by(Standard) %>%
-  mutate(
-    share = n / sum(n),
-    label = paste0(Pool_status, "\n", round(100 * share, 1), "%")
-  ) %>%
-  ungroup()
 
 plot_technology <- ggplot(
   technology_share,
@@ -965,21 +937,17 @@ plot_standard <- ggplot(
     min.size = 4,
     fontsize = 6
   ) +
-  labs(title = "Standards within cellular") +
+  labs(title = "Standard distribution within cellular") +
   theme_void() +
   theme(
     legend.position = "none",
     plot.title = element_text(hjust = 0.5, face = "bold")
   )
 
-plot_sdo_treemap <- plot_technology | plot_standard 
-
-plot_sdo_treemap
-
 plot_sdo_treemap <-
   plot_technology +
   plot_spacer() +
   plot_standard +
-  plot_layout(widths = c(1, 0.05, 1, 0.05, 1))
+  plot_layout(widths = c(1, 0.05, 1))
 
 plot_sdo_treemap
