@@ -127,7 +127,8 @@ labs(
     hjust = 0,
     color = "grey50",
     size = 9
-  )
+  ),
+  legend.position = 'bottom'
 )
 
 plot_sep_nsep_quarter
@@ -427,13 +428,14 @@ map_country_plot <- ggplot(
 ) +
   scale_fill_manual(
     values = c(
-      "Claimant"  = "grey75",
-      "Defendant" = "grey35"
-    )
+      "Claimant"  = "#003A70",
+      "Defendant" = "#0B5CAB"
+    ),
+    name = NULL
   ) +
   theme_minimal() +
   theme(
-    legend.position = "top",
+    legend.position = "bottom",
     strip.background = element_rect(fill = "grey92"),
     strip.text = element_text(face = "bold"),
     panel.grid.major.y = element_blank(),
@@ -444,8 +446,21 @@ map_country_plot <- ggplot(
       face = "bold",
       hjust = 0.5
     ),
-    plot.subtitle = element_text(hjust = 0.5)
-  )
+    plot.subtitle = element_text(hjust = 0.5),
+    axis.title.x = element_blank(),
+    axis.title.y.left = element_blank()
+  ) +
+labs(
+  caption = "Note: Jurisdictions with none SEP indexed cases or without court specified have been omitted from the plot. This includes Milan, Nordic-Baltic, Brussels and Vienna, and 6 empty cases."
+) + 
+  theme(
+  plot.caption = element_text(
+    hjust = 0,
+    color = "grey50",
+    size = 9
+  ),
+  legend.position = 'bottom'
+)
 
 ggsave('Output/geo_dist_countries_sep.jpeg', map_country_plot, width = 12, height = 7, dpi = 500)
 
@@ -514,49 +529,99 @@ ggsave('Output/outcome_plot_court.jpeg', outcome_plot_court, width = 12, height 
 
 # Firm characteristics of SEP claimants and defendants (and N-SEP) by SECTOR ----
 
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+library(treemapify)
+library(patchwork)
+
 sector_vars <- c("CHEMISTRY", "MECHANICAL", "ICT", "Instruments")
 
-plot_df_sector <- df %>%
-  group_by(court) %>%
-  filter(any(SEP == 1)) %>%
-  ungroup() %>%
+sector_share <- df %>%
   pivot_longer(
     cols = all_of(sector_vars),
     names_to = "Sector",
     values_to = "Present"
   ) %>%
   filter(Present == 1) %>%
+  group_by(Sector) %>%
+  summarise(n = n_distinct(ID), .groups = "drop") %>%
   mutate(
-    SEP_status = ifelse(SEP == 1, "SEP", "Non-SEP")
-  ) %>%
-  group_by(court, Sector, SEP_status) %>%
-  summarise(
-    n = n_distinct(ID),
-    .groups = "drop"
+    share = n / sum(n),
+    label = paste0(Sector, "\n", round(100 * share, 1), "%")
   )
 
-plot_df_sep_sector <- ggplot(plot_df_sector,
-       aes(x = n,
-           y = Sector,
-           fill = SEP_status)) +
-  geom_col(position = position_dodge(width = 0.8),
-           width = 0.7) +
-  facet_wrap(~court, scales = "free_y") +
-  scale_fill_manual(values = c("SEP" = "forestgreen",
-                               "Non-SEP" = "red")) +
-  labs(
-    x = "Number of cases",
-    y = NULL,
-    fill = NULL
+ict_share <- df %>%
+  filter(ICT == 1) %>%
+  mutate(Type = ifelse(SEP == 1, "SEP", "Non-SEP")) %>%
+  group_by(Type) %>%
+  summarise(n = n_distinct(ID), .groups = "drop") %>%
+  mutate(
+    share = n / sum(n),
+    label = paste0(Type, "\n", round(100 * share, 1), "%")
+  )
+
+plot_sector_share <- ggplot(
+  sector_share,
+  aes(
+    area = n,
+    fill = Sector,
+    label = label
+  )
+) +
+  geom_treemap(color = "white", linewidth = 1) +
+  geom_treemap_text(
+    colour = "white",
+    place = "topleft",
+    grow = TRUE,
+    reflow = TRUE
   ) +
-  theme_minimal() +
+  labs(title = "Sector distribution") +
+  theme_void() +
   theme(
-    legend.position = "top",
-    strip.background = element_rect(fill = "grey95"),
-    panel.grid.major.y = element_blank()
+    legend.position = "none",
+    plot.title = element_text(hjust = 0.5, face = "bold")
   )
 
-ggsave('Output/plot_df_sep_sector.jpeg', plot_df_sep_sector, width = 12, height = 7, dpi = 500)
+plot_ict_sep_share <- ggplot(
+  ict_share,
+  aes(
+    area = n,
+    fill = Type,
+    label = label
+  )
+) +
+  geom_treemap(color = "white", linewidth = 1) +
+  geom_treemap_text(
+    colour = "white",
+    place = "topleft",
+    grow = TRUE,
+    reflow = TRUE
+  ) +
+  scale_fill_manual(
+    values = c(
+      "SEP" = "#003A70",
+      "Non-SEP" = "#6BAED6"
+    )
+  ) +
+  labs(title = "SEP share within ICT cases") +
+  theme_void() +
+  theme(
+    legend.position = "none",
+    plot.title = element_text(hjust = 0.5, face = "bold")
+  )
+
+plot_sector_treemap <- plot_sector_share | plot_ict_sep_share
+
+plot_sector_treemap
+
+ggsave(
+  "Output/plot_sector_treemap.jpeg",
+  plot_sector_treemap,
+  width = 12,
+  height = 6,
+  dpi = 500
+)
 
 # Firm characteristic of SEP by QUALITY ---- 
 
