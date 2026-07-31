@@ -881,7 +881,8 @@ sdo_share <- df_sdo %>%
   summarise(n = n(), .groups = "drop") %>%
   mutate(
     share = n / sum(n),
-    label = paste0(SDO, "\n", round(100 * share, 1), "%")
+    label = paste0(SDO, "\n", round(100 * share, 1), "%"),
+    color_rank = rank(-n, ties.method = "first")
   )
 
 etsi_technology_share <- df_sdo %>%
@@ -893,7 +894,8 @@ etsi_technology_share <- df_sdo %>%
   summarise(n = n(), .groups = "drop") %>%
   mutate(
     share = n / sum(n),
-    label = paste0(`Technology Category`, "\n", round(100 * share, 1), "%")
+    label = paste0(`Technology Category`, "\n", round(100 * share, 1), "%"),
+    color_rank = rank(-n, ties.method = "first")
   )
 
 cellular_standard_share <- df_sdo %>%
@@ -906,14 +908,15 @@ cellular_standard_share <- df_sdo %>%
   summarise(n = n(), .groups = "drop") %>%
   mutate(
     share = n / sum(n),
-    label = paste0(Standard, "\n", round(100 * share, 1), "%")
+    label = paste0(Standard, "\n", round(100 * share, 1), "%"),
+    color_rank = rank(-n, ties.method = "first")
   )
 
 plot_sdo <- ggplot(
   sdo_share,
   aes(
     area = n,
-    fill = SDO,
+    fill = factor(color_rank),
     label = label
   )
 ) +
@@ -931,13 +934,23 @@ plot_sdo <- ggplot(
   theme(
     legend.position = "none",
     plot.title = element_text(hjust = 0.5, face = "bold")
-  )
+  ) + 
+  scale_fill_manual(
+    values = c(
+      "1" = "#003A70",
+      "2" = "#0B5CAB",
+      "3" = "#6BAED6",
+      "4" = "#D9EAF7",
+      "5" = "#4A4A4A",
+      "6" = "#8C8C8C"
+    )
+  ) 
 
 plot_technology <- ggplot(
   etsi_technology_share,
   aes(
     area = n,
-    fill = `Technology Category`,
+    fill = factor(color_rank),
     label = label
   )
 ) +
@@ -955,13 +968,23 @@ plot_technology <- ggplot(
   theme(
     legend.position = "none",
     plot.title = element_text(hjust = 0.5, face = "bold")
-  )
+  ) + 
+  scale_fill_manual(
+    values = c(
+      "1" = "#003A70",
+      "2" = "#0B5CAB",
+      "3" = "#6BAED6",
+      "4" = "#D9EAF7",
+      "5" = "#4A4A4A",
+      "6" = "#8C8C8C"
+    )
+  ) 
 
 plot_standard <- ggplot(
   cellular_standard_share,
   aes(
     area = n,
-    fill = Standard,
+    fill = factor(color_rank),
     label = label
   )
 ) +
@@ -979,7 +1002,17 @@ plot_standard <- ggplot(
   theme(
     legend.position = "none",
     plot.title = element_text(hjust = 0.5, face = "bold")
-  )
+  ) + 
+  scale_fill_manual(
+    values = c(
+      "1" = "#003A70",
+      "2" = "#0B5CAB",
+      "3" = "#6BAED6",
+      "4" = "#D9EAF7",
+      "5" = "#4A4A4A",
+      "6" = "#8C8C8C"
+    )
+  ) 
 
 plot_sdo_treemap <-
   plot_sdo +
@@ -987,6 +1020,155 @@ plot_sdo_treemap <-
   plot_technology +
   plot_spacer() +
   plot_standard +
-  plot_layout(widths = c(1, 0.05, 1, 0.05, 1))
+  plot_layout(widths = c(1, 0.05, 0.8, 0.05, 0.6))
 
 plot_sdo_treemap
+
+ggsave('Output/plot_sdo_treemap.jpeg', plot_sdo_treemap, height = 7, width = 12, dpi = 500)
+
+
+sdo_share <- sdo_share %>%
+  mutate(color_rank = if_else(SDO == "ETSI", 1, color_rank))
+
+etsi_technology_share <- etsi_technology_share %>%
+  mutate(color_rank = if_else(`Technology Category` == "Cellular", 1, color_rank))
+
+cellular_standard_share <- cellular_standard_share %>%
+  mutate(color_rank = if_else(Standard == "5G NR", 1, color_rank))
+
+
+plot_sdo <- ggplot(
+  sdo_share,
+  aes(
+    area = n,
+    fill = factor(color_rank),
+    label = label
+  )
+) +
+  geom_treemap(color = "white", linewidth = 1, start = "bottomright") +
+  geom_treemap_text(
+    colour = "white",
+    place = "topleft",
+    grow = FALSE,
+    reflow = TRUE,
+    min.size = 4,
+    fontsize = 6,
+    start = "bottomright"
+  ) +
+  labs(title = "SDO distribution") +
+  theme_void() +
+  theme(
+    legend.position = "none",
+    plot.title = element_text(hjust = 0.5, face = "bold")
+  ) +
+  scale_fill_manual(
+    values = c(
+      "1" = "#003A70",
+      "2" = "#0B5CAB",
+      "3" = "#6BAED6",
+      "4" = "#D9EAF7",
+      "5" = "#4A4A4A",
+      "6" = "#8C8C8C"
+    )
+  )
+
+plot_technology <- ggplot(
+  etsi_technology_share,
+  aes(
+    area = n,
+    fill = factor(color_rank),
+    label = label
+  )
+) +
+  geom_treemap(color = "white", linewidth = 1, start = "bottomright") +
+  geom_treemap_text(
+    colour = "white",
+    place = "topleft",
+    grow = FALSE,
+    reflow = TRUE,
+    min.size = 4,
+    fontsize = 6,
+    start = "bottomright"
+  ) +
+  labs(title = "Technology within ETSI") +
+  theme_void() +
+  theme(
+    legend.position = "none",
+    plot.title = element_text(hjust = 0.5, face = "bold")
+  ) +
+  scale_fill_manual(
+    values = c(
+      "1" = "#003A70",
+      "2" = "#0B5CAB",
+      "3" = "#6BAED6",
+      "4" = "#D9EAF7",
+      "5" = "#4A4A4A",
+      "6" = "#8C8C8C"
+    )
+  )
+
+plot_standard <- ggplot(
+  cellular_standard_share,
+  aes(
+    area = n,
+    fill = factor(color_rank),
+    label = label
+  )
+) +
+  geom_treemap(color = "white", linewidth = 1, start = "bottomright") +
+  geom_treemap_text(
+    colour = "white",
+    place = "topleft",
+    grow = FALSE,
+    reflow = TRUE,
+    min.size = 4,
+    fontsize = 6,
+    start = "bottomright"
+  ) +
+  labs(title = "Standards within cellular") +
+  theme_void() +
+  theme(
+    legend.position = "none",
+    plot.title = element_text(hjust = 0.5, face = "bold")
+  ) +
+  scale_fill_manual(
+    values = c(
+      "1" = "#003A70",
+      "2" = "#0B5CAB",
+      "3" = "#6BAED6",
+      "4" = "#D9EAF7",
+      "5" = "#4A4A4A",
+      "6" = "#8C8C8C"
+    )
+  )
+
+plot_technology_small <-
+  plot_spacer() /
+  plot_technology /
+  plot_spacer() +
+  plot_layout(heights = c(0.2, 0.6, 0.2))
+
+plot_standard_small <-
+  plot_spacer() /
+  plot_standard /
+  plot_spacer() +
+  plot_layout(heights = c(0.3, 0.4, 0.3))
+
+plot_sdo_treemap <-
+  plot_sdo +
+  plot_spacer() +
+  plot_technology_small +
+  plot_spacer() +
+  plot_standard_small +
+  plot_layout(widths = c(1, 0.03, 0.9, 0.03, 0.8))
+
+plot_sdo_treemap
+
+ggsave(
+  'Output/plot_sdo_treemap.jpeg',
+  plot_sdo_treemap,
+  height = 7,
+  width = 12,
+  dpi = 500
+)
+
