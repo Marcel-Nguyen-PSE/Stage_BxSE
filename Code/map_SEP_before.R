@@ -858,8 +858,26 @@ plot_category_claim_def <- ggplot(
     axis.title.x = element_blank(),
     axis.title.y.left = element_blank(),
     legend.position = 'bottom'
-  ) 
-  
+  ) +
+labs(
+  caption = "Note: 22 cases with empty defendant categories and 15 with empty claimants categories are omitted in this plot. Numeric values are not shown for shares inferior to 5%"
+) + 
+  theme(
+  plot.caption = element_text(
+    hjust = 0,
+    color = "grey50",
+    size = 9
+  ),
+  legend.position = 'bottom'
+) +
+  geom_text(
+  aes(
+    label = ifelse(share > 0.06, round(share * 100, 0), "")
+  ),
+  position = position_stack(vjust = 0.5),
+  color = "white",
+  size = 3
+) 
 
 plot_category_claim_def 
 
