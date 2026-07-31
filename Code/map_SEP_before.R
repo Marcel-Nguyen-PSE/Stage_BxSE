@@ -51,6 +51,9 @@ df_sep <- df %>%
   filter(SEP == 1) %>%
   arrange(ID)
 
+df_sep_unique <- df_sep %>%
+  distinct(Patentnumber)
+
 # Monthly evolution of SEP AND non-SEP actions ---- 
 
 df <- df %>%
@@ -61,41 +64,80 @@ df <- df %>%
   ) %>%
   ungroup()
 
-plot_sep_nsep_month <- ggplot(data = df, aes(x = Date)) +
-  geom_line(
-    data = df,
-    aes(y = n_actions_sep), 
-    linewidth = 1.2, 
-    color = '#003A70'
-  ) + 
-    geom_line(
-      data = df, 
-      aes(y = n_actions_nsep),
-      linewidth = 1.2,
-      color = '#6BAED6'
-  ) + 
-    scale_x_date(
-      date_breaks = '3 months',
-      date_labels = '%b\n%Y'
-    ) +
-    theme_minimal() +
+df_quarter <- df %>%
+  mutate(
+    Quarter = floor_date(Date, unit = "quarter"),
+    Quarter_label = paste0("Q", quarter(Date), " ", year(Date))
+  ) %>%
+  group_by(Quarter, Quarter_label) %>%
+  summarise(
+    SEP = sum(n_actions_sep, na.rm = TRUE),
+    `N-SEP` = sum(n_actions_nsep, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  pivot_longer(
+    cols = c(SEP, `N-SEP`),
+    names_to = "Type",
+    values_to = "n"
+  )
+
+plot_sep_nsep_quarter <- ggplot(
+  df_quarter,
+  aes(x = Quarter, y = n, fill = Type)
+) +
+  geom_col(
+    position = position_dodge(width = 70),
+    width = 60
+  ) +
+  geom_text(
+    aes(label = n),
+    position = position_dodge(width = 70),
+    vjust = -0.4,
+    size = 3
+  ) +
+  scale_fill_manual(
+    values = c(
+      "SEP" = "#003A70",
+      "N-SEP" = "#6BAED6"
+    )
+  ) +
+  scale_x_date(
+    breaks = unique(df_quarter$Quarter),
+    labels = unique(df_quarter$Quarter_label)
+  ) +
+  scale_y_continuous(
+    expand = expansion(mult = c(0, 0.1))
+  ) +
+  theme_minimal() +
   theme(
     axis.title.x = element_blank(),
     axis.title.y = element_blank(),
+    axis.text.x = element_text(angle = 45, hjust = 1),
     panel.grid.major.x = element_blank(),
     panel.grid.minor.x = element_blank(),
     panel.grid.major.y = element_line(colour = "grey85"),
-    panel.grid.minor.y = element_blank()
+    panel.grid.minor.y = element_blank(),
+    legend.title = element_blank()
+  ) +
+labs(
+  caption = "Note: N = 911 patent cases before the United Patent Court (UPC) from Jun 2023 to May 2026 aggregated by quarter. \n Low levels in Q2 2023 and Q2 2026 are due to limited data availability."
+) + 
+  theme(
+  plot.caption = element_text(
+    hjust = 0,
+    color = "grey50",
+    size = 9
   )
+)
 
-plot_sep_nsep_month
+plot_sep_nsep_quarter
 
 ggsave(
-  'Output/plot_sep_nsep_month.jpeg',
-  plot_sep_nsep_month, 
+  "Output/plot_sep_nsep_quarter.jpeg",
+  plot_sep_nsep_quarter,
   width = 12,
   height = 7,
-  dpi = 300
+  dpi = 500
 )
 
 # Share of SEP cases among all UPC actions ----
@@ -716,3 +758,10 @@ plot_category_claim_def <- ggplot(
   theme_minimal()
 
 ggsave('Output/plot_category_claim_def.jpeg', plot_category_claim_def, width = 12, height = 7, dpi = 500)
+
+# SEP SDO Patent Categories ---- 
+
+df_sdo <- read_xlsx('Data/SEP_complete_with_standard_category - 25072026.xlsx')
+
+
+
