@@ -875,8 +875,20 @@ ggsave('Output/plot_category_claim_def.jpeg', plot_category_claim_def, width = 1
 
 df_sdo <- read_xlsx('Data/SEP_complete_with_standard_category - 25072026.xlsx')
 
-technology_share <- df_sdo %>%
-  filter(!is.na(`Technology Category`)) %>%
+sdo_share <- df_sdo %>%
+  filter(!is.na(SDO)) %>%
+  group_by(SDO) %>%
+  summarise(n = n(), .groups = "drop") %>%
+  mutate(
+    share = n / sum(n),
+    label = paste0(SDO, "\n", round(100 * share, 1), "%")
+  )
+
+etsi_technology_share <- df_sdo %>%
+  filter(
+    SDO == "ETSI",
+    !is.na(`Technology Category`)
+  ) %>%
   group_by(`Technology Category`) %>%
   summarise(n = n(), .groups = "drop") %>%
   mutate(
@@ -886,6 +898,7 @@ technology_share <- df_sdo %>%
 
 cellular_standard_share <- df_sdo %>%
   filter(
+    SDO == "ETSI",
     `Technology Category` == "Cellular",
     !is.na(Standard)
   ) %>%
@@ -896,8 +909,32 @@ cellular_standard_share <- df_sdo %>%
     label = paste0(Standard, "\n", round(100 * share, 1), "%")
   )
 
+plot_sdo <- ggplot(
+  sdo_share,
+  aes(
+    area = n,
+    fill = SDO,
+    label = label
+  )
+) +
+  geom_treemap(color = "white", linewidth = 1) +
+  geom_treemap_text(
+    colour = "white",
+    place = "topleft",
+    grow = FALSE,
+    reflow = TRUE,
+    min.size = 4,
+    fontsize = 6
+  ) +
+  labs(title = "SDO distribution") +
+  theme_void() +
+  theme(
+    legend.position = "none",
+    plot.title = element_text(hjust = 0.5, face = "bold")
+  )
+
 plot_technology <- ggplot(
-  technology_share,
+  etsi_technology_share,
   aes(
     area = n,
     fill = `Technology Category`,
@@ -913,7 +950,7 @@ plot_technology <- ggplot(
     min.size = 4,
     fontsize = 6
   ) +
-  labs(title = "Technology category") +
+  labs(title = "Technology within ETSI") +
   theme_void() +
   theme(
     legend.position = "none",
@@ -937,7 +974,7 @@ plot_standard <- ggplot(
     min.size = 4,
     fontsize = 6
   ) +
-  labs(title = "Standard distribution within cellular") +
+  labs(title = "Standards within cellular") +
   theme_void() +
   theme(
     legend.position = "none",
@@ -945,9 +982,11 @@ plot_standard <- ggplot(
   )
 
 plot_sdo_treemap <-
+  plot_sdo +
+  plot_spacer() +
   plot_technology +
   plot_spacer() +
   plot_standard +
-  plot_layout(widths = c(1, 0.05, 1))
+  plot_layout(widths = c(1, 0.05, 1, 0.05, 1))
 
 plot_sdo_treemap
