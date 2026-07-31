@@ -580,7 +580,7 @@ plot_sector_share <- ggplot(
       "ICT" = "#003A70",
       "MECHANICAL" = "#0B5CAB",
       "Instruments" = "#6BAED6",
-      "CHEMISTRY" = "#c5e5f8da"
+      "CHEMISTRY" = "#c5e5f8"
     )
   ) +
   labs(title = "Sector distribution") +
@@ -809,7 +809,9 @@ df_share <- df_cat %>%
   filter(
     !is.na(Type),
     !is.na(Category),
-    !is.na(SEP)
+    !is.na(SEP),
+    Type != 'UNKNOWN',
+    Category != ''
   ) %>%
   count(SEP, Type, Category, name = "n") %>%
   group_by(SEP, Type) %>%
@@ -818,6 +820,14 @@ df_share <- df_cat %>%
     SEP_status = if_else(SEP == 1, "SEP", "Non-SEP")
   ) %>%
   ungroup()
+
+df_share <- df_share %>%
+  mutate(
+    Type = factor(
+      Type,
+      levels = c("DOWNSTREAM", "HYBRID", "UPSTREAM", "PAE")
+    )
+  )
 
 plot_category_claim_def <- ggplot(
   df_share,
@@ -829,13 +839,29 @@ plot_category_claim_def <- ggplot(
 ) +
   geom_col(width = 0.7) +
   facet_wrap(~ SEP_status) +
+  scale_fill_manual(
+  values = c(
+    "Component supplier" = "#003A70",
+    "Distributor / retailer" = "#0B5CAB",
+    "Product manufacturer (OEM)" = "#6BAED6",
+    "Service provider / end user" = "#D9EAF7"
+  )
+) +
   scale_y_continuous(labels = percent_format()) +
   labs(
     x = "Claimant category",
     y = "Share of defendant categories",
     fill = "Defendant category"
   ) +
-  theme_minimal()
+  theme_minimal() + 
+  theme(
+    axis.title.x = element_blank(),
+    axis.title.y.left = element_blank(),
+    legend.position = 'bottom'
+  ) 
+  
+
+plot_category_claim_def 
 
 ggsave('Output/plot_category_claim_def.jpeg', plot_category_claim_def, width = 12, height = 7, dpi = 500)
 
