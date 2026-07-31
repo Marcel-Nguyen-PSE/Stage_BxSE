@@ -556,79 +556,67 @@ ict_share <- df %>%
     label = paste0(Type, "\n", round(100 * share, 1), "%")
   )
 
-plot_sector_share <- ggplot(
-  sector_share,
-  aes(
-    area = n,
-    fill = Sector,
-    label = label
-  )
-) +
-  geom_treemap(color = "white", linewidth = 1) +
-  geom_treemap_text(
-  colour = "white",
-  place = "topleft",
-  grow = FALSE,
-  reflow = TRUE,
-  min.size = 4,
-  fontsize = 6,
-  padding.x = grid::unit(2, "mm"),
-  padding.y = grid::unit(2, "mm")
-) +
-  scale_fill_manual(
-    values = c(
-      "ICT" = "#003A70",
-      "MECHANICAL" = "#0B5CAB",
-      "Instruments" = "#6BAED6",
-      "CHEMISTRY" = "#c5e5f8"
-    )
-  ) +
-  labs(title = "Sector distribution") +
-  theme_void() +
-  theme(
-    legend.position = "none",
-    plot.title = element_text(hjust = 0.5, face = "bold")
-  )
-
-plot_ict_sep_share <- ggplot(
-  ict_share,
-  aes(
-    area = n,
-    fill = Type,
-    label = label
-  )
-) +
-  geom_treemap(color = "white", linewidth = 1) +
-  geom_treemap_text(
-  colour = "white",
-  place = "topleft",
-  grow = FALSE,
-  reflow = TRUE,
-  min.size = 4,
-  fontsize = 6,
-  padding.x = grid::unit(2, "mm"),
-  padding.y = grid::unit(2, "mm")
-) +
-  scale_fill_manual(
-    values = c(
-      "SEP" = "#003A70",
-      "Non-SEP" = "#609ec2"
-    )
-  ) +
-  labs(title = "SEP share within ICT cases") +
-  theme_void() +
-  theme(
-    legend.position = "none",
-    plot.title = element_text(hjust = 0.5, face = "bold")
-  )
+plot_ict_sep_share_small <-
+  plot_spacer() /
+  plot_ict_sep_share /
+  plot_spacer() +
+  plot_layout(heights = c(0.2, 0.6, 0.2))
 
 plot_sector_treemap <-
   plot_sector_share +
   plot_spacer() +
-  plot_ict_sep_share +
-  plot_layout(widths = c(1, 0.05, 1))
+  plot_ict_sep_share_small +
+  plot_layout(widths = c(1, 0.08, 0.65)) +
+  plot_annotation(
+    theme = theme(
+      plot.background = element_rect(fill = "white", color = NA)
+    )
+  )
+
+plot_sector_treemap <- plot_sector_treemap +
+  inset_element(
+    ggplot() +
+      geom_segment(
+        aes(x = 0, y = 1, xend = 1, yend = 0.8),
+        colour = "grey50",
+        linewidth = 0.6
+      ) +
+      geom_segment(
+        aes(x = 0, y = 0, xend = 1, yend = 0.2),
+        colour = "grey50",
+        linewidth = 0.6
+      ) +
+      xlim(0, 1) +
+      ylim(0, 1) +
+      theme_void(),
+    left = 0.55,
+    bottom = 0,
+    right = 0.72,
+    top = 1,
+    align_to = "full"
+  )
 
 plot_sector_treemap
+
+base_plot <-
+  plot_sector_share +
+  plot_spacer() +
+  plot_ict_sep_share_small +
+  plot_layout(widths = c(1, 0.08, 0.65))
+
+plot_sector_treemap <- ggdraw(base_plot) +
+  draw_line(
+    x = c(0.561, 0.627),
+    y = c(0.93, 0.71),
+    color = "grey50",
+    linewidth = 0.7
+  ) +
+  draw_line(
+    x = c(0.561, 0.627),
+    y = c(0.03, 0.21),
+    color = "grey50",
+    linewidth = 0.7
+  )
 
 ggsave(
   "Output/plot_sector_treemap.jpeg",
@@ -887,5 +875,111 @@ ggsave('Output/plot_category_claim_def.jpeg', plot_category_claim_def, width = 1
 
 df_sdo <- read_xlsx('Data/SEP_complete_with_standard_category - 25072026.xlsx')
 
+df_sep <- df_cat %>%
+  filter(SEP == 1) %>%
+  distinct(Patentnumber, SDO) %>%
+  left_join(df_sdo, by = 'Patentnumber')
 
+technology_share <- df_sdo %>%
+  filter(!is.na(`Technology Category`)) %>%
+  group_by(`Technology Category`) %>%
+  summarise(n = n(), .groups = "drop") %>%
+  mutate(
+    share = n / sum(n),
+    label = paste0(`Technology Category`, "\n", round(100 * share, 1), "%")
+  )
 
+cellular_standard_share <- df_sdo %>%
+  filter(
+    `Technology Category` == "Cellular",
+    !is.na(Standard)
+  ) %>%
+  group_by(Standard) %>%
+  summarise(n = n(), .groups = "drop") %>%
+  mutate(
+    share = n / sum(n),
+    label = paste0(Standard, "\n", round(100 * share, 1), "%")
+  )
+
+pool_share <- df_sdo %>%
+  filter(
+    `Technology Category` == "Cellular",
+    !is.na(Standard)
+  ) %>%
+  mutate(
+    Pool_status = ifelse(
+      is.na(`Patent Pool Administrator`) |
+        `Patent Pool Administrator` == "" |
+        `Patent Pool Administrator` == "NA",
+      "No patent pool",
+      "Patent pool"
+    )
+  ) %>%
+  group_by(Standard, Pool_status) %>%
+  summarise(n = n(), .groups = "drop") %>%
+  group_by(Standard) %>%
+  mutate(
+    share = n / sum(n),
+    label = paste0(Pool_status, "\n", round(100 * share, 1), "%")
+  ) %>%
+  ungroup()
+
+plot_technology <- ggplot(
+  technology_share,
+  aes(
+    area = n,
+    fill = `Technology Category`,
+    label = label
+  )
+) +
+  geom_treemap(color = "white", linewidth = 1) +
+  geom_treemap_text(
+    colour = "white",
+    place = "topleft",
+    grow = FALSE,
+    reflow = TRUE,
+    min.size = 4,
+    fontsize = 6
+  ) +
+  labs(title = "Technology category") +
+  theme_void() +
+  theme(
+    legend.position = "none",
+    plot.title = element_text(hjust = 0.5, face = "bold")
+  )
+
+plot_standard <- ggplot(
+  cellular_standard_share,
+  aes(
+    area = n,
+    fill = Standard,
+    label = label
+  )
+) +
+  geom_treemap(color = "white", linewidth = 1) +
+  geom_treemap_text(
+    colour = "white",
+    place = "topleft",
+    grow = FALSE,
+    reflow = TRUE,
+    min.size = 4,
+    fontsize = 6
+  ) +
+  labs(title = "Standards within cellular") +
+  theme_void() +
+  theme(
+    legend.position = "none",
+    plot.title = element_text(hjust = 0.5, face = "bold")
+  )
+
+plot_sdo_treemap <- plot_technology | plot_standard 
+
+plot_sdo_treemap
+
+plot_sdo_treemap <-
+  plot_technology +
+  plot_spacer() +
+  plot_standard +
+  plot_layout(widths = c(1, 0.05, 1, 0.05, 1))
+
+plot_sdo_treemap
