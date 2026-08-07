@@ -95,7 +95,8 @@ plot_sep_nsep_quarter <- ggplot(
     aes(label = n),
     position = position_dodge(width = 70),
     vjust = -0.4,
-    size = 3
+    size = 3,
+    fontface = 'bold'
   ) +
   scale_fill_manual(
     values = c(
@@ -471,7 +472,8 @@ map_country_plot <- ggplot(
     label = ifelse(n == 0, "", n)
   ),
   hjust = ifelse(country_plot_df$value < 0, 1, 0),
-  size = 3
+  size = 3,
+  fontface = 'bold'
 ) +
   scale_fill_manual(
     values = c(
@@ -483,10 +485,10 @@ map_country_plot <- ggplot(
   theme_minimal() +
   theme(
     legend.position = "bottom",
-    strip.background = element_rect(fill = "grey92"),
+    strip.background = element_rect(fill = "white"),
     strip.text = element_text(face = "bold"),
     panel.grid.major.y = element_blank(),
-    panel.grid.minor = element_blank(),
+    panel.grid.minor.y = element_blank(),
     panel.spacing = grid::unit(1, "lines"),
     axis.text.y = element_text(size = 8),
     plot.title = element_text(
@@ -585,29 +587,66 @@ base_plot <-
   plot_sector_share +
   plot_spacer() +
   plot_ict_sep_share_small +
-  plot_layout(widths = c(1, 0.08, 0.65))
-
-plot_sector_treemap <- ggdraw(base_plot) +
-  draw_line(
-    x = c(0.561, 0.627),
-    y = c(0.93, 0.71),
-    color = "grey50",
-    linewidth = 0.7
-  ) +
-  draw_line(
-    x = c(0.561, 0.627),
-    y = c(0.03, 0.21),
-    color = "grey50",
-    linewidth = 0.7
+  plot_layout(widths = c(1, 0.08, 0.65)) +
+  plot_annotation(
+    caption = "Note: Technology sectors are not mutually exclusive, implying that individual cases may be assigned to multiple sectors.",
+    theme = theme(
+      plot.caption = element_text(
+        hjust = 0,
+        color = "grey50",
+        size = 9
+      )
+    )
   )
 
 ggsave(
   "Output/plot_sector_treemap.jpeg",
-  plot_sector_treemap,
+  base_plot,
   width = 12,
   height = 6,
   dpi = 500
 )
+
+# Bar plot of SDO categories (across jurisdictions)
+
+plot_sdo <- df2 %>%
+  filter(SEP == 1, !is.na(SDO), !(SDO == "")) %>%   
+  distinct(ID, court, SDO) %>%     
+  count(court, SDO) 
+
+sdo_plot <- ggplot(
+  plot_sdo,
+  aes(
+    x = n,
+    y = reorder(SDO, n)
+  )
+) +
+  geom_col(fill = "#003A70") +
+  geom_text(
+    aes(label = round(n, 0)),
+    hjust = -0.2,
+    color = "black",
+    size = 3,
+    fontface = "bold"
+  ) +
+  facet_wrap(~court) +
+  labs(
+    x = "Number of SEP cases",
+    y = NULL
+  ) +
+  theme_minimal() +
+  theme(
+    strip.background = element_rect(fill = "white"),
+    strip.text = element_text(face = "plain"),
+    legend.position = "none",
+    panel.grid.minor.x = element_blank(),
+    panel.grid.major.x = element_blank()
+  )
+
+sdo_plot
+
+ggsave('Output/plot_df_sep_sdo.jpeg', sdo_plot, width = 12, height = 7, dpi = 500)
+
 
 # Summary Statistics ---- 
 
@@ -1002,7 +1041,7 @@ plot_standard_small <-
   plot_spacer() +
   plot_layout(heights = c(0.3, 0.4, 0.3))
 
-plot_sdo_treemap <-
+plot_sdo_treemap_bis <-
   plot_sdo +
   plot_spacer() +
   plot_technology_small +
@@ -1010,7 +1049,7 @@ plot_sdo_treemap <-
   plot_standard_small +
   plot_layout(widths = c(1, 0.03, 0.9, 0.03, 0.8)) +
   plot_annotation(
-    caption = "Note: An SDO (Standards Development Organization) family refers to the standards-setting body responsible for developing and maintaining technical standards. \n Technology categories denote the broad technological domains covered by patents within an SDO. Standards refer to the specific technical standards implemented within a technology category.",
+    caption = "Note: An SDO (Standards Development Organization) family refers to the standards-setting body responsible for developing and maintaining technical standards. \n Technology categories denote the broad technological domains covered by patents within an SDO. Standards refer to the specific technical standards implemented within a technology category. \n Values below 1% are not shown for readability.",
     theme = theme(
       plot.caption = element_text(
         hjust = 0,
@@ -1020,11 +1059,11 @@ plot_sdo_treemap <-
     )
   )
 
-plot_sdo_treemap 
+plot_sdo_treemap_bis
 
 ggsave(
   'Output/plot_sdo_treemap.jpeg',
-  plot_sdo_treemap,
+  plot_sdo_treemap_bis,
   height = 7,
   width = 12,
   dpi = 500
