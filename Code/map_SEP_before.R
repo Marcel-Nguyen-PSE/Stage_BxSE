@@ -238,11 +238,51 @@ df_firms_claim <- df %>%
     .groups = "drop"
   ) %>%
   mutate(
-    NPE_firm = Claimants %in% npe_firms
+    NPE_firm = ifelse(
+      Claimants %in% npe_firms,
+      "NPE",
+      "Operating company"
+    ),
+    NPE_firm = factor(
+      NPE_firm,
+      levels = c("Operating company", "NPE")
+    )
   )
 
 top_10_claim <- df_firms_claim %>%
   slice_max(n_by_firms, n = 10, with_ties = FALSE)
+
+df_firms_def <- df %>%
+  filter(SEP == 1) %>%
+  group_by(Defendants) %>%
+  summarise(
+    n_by_firms_def = n_distinct(ID),
+    .groups = "drop"
+  ) %>%
+  mutate(
+    NPE_firm = ifelse(
+      Defendants %in% npe_firms,
+      "NPE",
+      "Operating company"
+    ),
+    NPE_firm = factor(
+      NPE_firm,
+      levels = c("Operating company", "NPE")
+    )
+  )
+
+top_10_def <- df_firms_def %>%
+  slice_max(n_by_firms_def, n = 10, with_ties = FALSE)
+
+fill_scale <- scale_fill_manual(
+  values = c(
+    "Operating company" = "#003A70",
+    "NPE" = "#0B5CAB"
+  ),
+  limits = c("Operating company", "NPE"),
+  drop = FALSE,
+  name = NULL
+)
 
 plot_bar_top10_sep_firms <- ggplot(
   top_10_claim,
@@ -260,41 +300,14 @@ plot_bar_top10_sep_firms <- ggplot(
     color = "white",
     fontface = "bold"
   ) +
-  scale_fill_manual(
-    values = c(
-      `FALSE` = "#003A70",
-      `TRUE`  = "#0B5CAB"
-    ),
-    breaks = c(FALSE, TRUE),
-    labels = c(
-      `FALSE` = "Operating company",
-      `TRUE`  = "NPE"
-    ),
-    drop = FALSE,
-    name = NULL
-  ) +
+  fill_scale +
   theme_minimal() +
   theme(
     axis.title = element_blank(),
     axis.text.x = element_text(angle = 45, hjust = 1),
     panel.grid.major.x = element_blank(),
-    panel.grid.minor = element_blank(),
-    legend.position = "bottom"
+    panel.grid.minor = element_blank()
   )
-
-df_firms_def <- df %>%
-  filter(SEP == 1) %>%
-  group_by(Defendants) %>%
-  summarise(
-    n_by_firms_def = n_distinct(ID),
-    .groups = "drop"
-  ) %>%
-  mutate(
-    NPE_firm = Defendants %in% npe_firms
-  )
-
-top_10_def <- df_firms_def %>%
-  slice_max(n_by_firms_def, n = 10, with_ties = FALSE)
 
 plot_bar_top10_sep_firms_def <- ggplot(
   top_10_def,
@@ -312,36 +325,57 @@ plot_bar_top10_sep_firms_def <- ggplot(
     color = "white",
     fontface = "bold"
   ) +
-  scale_fill_manual(
-    values = c(
-      `FALSE` = "#003A70",
-      `TRUE`  = "#0B5CAB"
-    ),
-    breaks = c(FALSE, TRUE),
-    labels = c(
-      `FALSE` = "Operating company",
-      `TRUE`  = "NPE"
-    ),
-    drop = FALSE,
-    name = NULL
-  ) +
+  fill_scale +
   theme_minimal() +
   theme(
     axis.title = element_blank(),
     axis.text.x = element_text(angle = 45, hjust = 1),
     panel.grid.major.x = element_blank(),
-    panel.grid.minor = element_blank(),
-    legend.position = "bottom"
+    panel.grid.minor = element_blank()
   )
 
 plot_bar_top10_sep_def_claim <-
-  (plot_bar_top10_sep_firms | plot_bar_top10_sep_firms_def) +
-  plot_layout(guides = "collect") +
-  plot_annotation(
-    theme = theme(
-      legend.position = "bottom",
-      legend.justification = "center"
-    )
+  (plot_bar_top10_sep_firms | plot_bar_top10_sep_firms_def) /
+  guide_area() +
+  plot_layout(
+    guides = "collect",
+    heights = c(1, 0.08)
+  )
+
+legend_plot <- ggplot(
+  data.frame(
+    NPE_firm = factor(
+      c("Operating company", "NPE"),
+      levels = c("Operating company", "NPE")
+    ),
+    x = 1:2,
+    y = 1
+  ),
+  aes(x = x, y = y, fill = NPE_firm)
+) +
+  geom_col() +
+  fill_scale +
+  theme_void() +
+  theme(
+    legend.position = "bottom",
+    legend.justification = "center"
+  )
+
+plot_bar_top10_sep_firms <- plot_bar_top10_sep_firms +
+  theme(legend.position = "none")
+
+plot_bar_top10_sep_firms_def <- plot_bar_top10_sep_firms_def +
+  theme(legend.position = "none")
+
+shared_legend <- cowplot::get_legend(legend_plot)
+
+plots_top <- plot_bar_top10_sep_firms | plot_bar_top10_sep_firms_def
+
+plot_bar_top10_sep_def_claim <-
+  plots_top /
+  wrap_elements(shared_legend) +
+  plot_layout(
+    heights = c(1, 0.08)
   )
 
 ggsave(
