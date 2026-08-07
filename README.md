@@ -2,36 +2,36 @@
 
 ## Summary of figures / Main results 
 
-*Monthly SEP case volumes exhibit a clear upward trajectory, reaching a peak in late 2025, whereas non-SEP litigation remains relatively stable at low levels*
+*Quarterly SEP case volumes exhibit a clear upward trajectory, reaching a peak in late 2025, whereas N-SEP litigation follows a similar but substantially larger upward trend.*
 
-![Monthly Trend of SEP and N-SEP 2023-2026](Output/plot_sep_nsep_month.jpeg)
+![Quarterly Trend of SEP and N-SEP (2023–2026)](Output/plot_sep_nsep_quarter.jpeg)
 
 *SEP disputes accounted for nearly one-third (29.2%) of all patent litigation before the three major German patent courts over the study period.*
 *Note: jurisdictions with null SEP cases have been removed from the plot for readability*
 
-![SEP share quarterly trend across jurisdictions](Output/plot_share_juris_sup0.jpeg)
+![Quarterly SEP share across jurisdictions](Output/plot_share_juris_sup0.jpeg)
 
 *Across all jurisdictions, litigants were predominantly headquartered in the United States and China, followed by Germany, the Netherlands and Japan*
 
 ![Geographic distribution of SEP cases across jurisdictions](Output/geo_dist_countries_sep.jpeg)
 
-*SEP litigation is concentrated in ICT technologies, whereas non-SEP disputes are distributed across ICT, mechanical, chemical, and instrumentation patents.*
+*ICT accounts for 57% of all patent cases before the UPC. Within ICT, 38.6% of cases involve SEPs.*
 
-![SEP distribution across sectors and jurisdictions](Output/plot_df_sep_sector.jpeg)
+![Sector distribution and SEP share within ICT](Output/plot_sector_treemap.jpeg)
 
-*Compared with non-SEP litigation, SEP cases involve a higher proportion of PAEs (26.0% v. 11.1%), while non-SEP cases are dominated by downstream operating firms*
+*Compared with N-SEP litigation, SEP disputes involve relatively more upstream firms and PAEs, whereas N-SEP litigation is dominated by downstream firms.*
 
-![SEP distribution across sectors and jurisdictions](Output/heatmap_sector.jpeg)
+![SEP distribution across sectors and jurisdictions](Output/plot_category_claim_def.jpeg)
 
-*Only about 5% of SEP disputes results in a judicial decision, with the remaining ending in settlement or having no publicly available outcome.*
+*ETSI accounts for over 70% of identified SEP families. Within ETSI, Cellular technologies dominate, with 4G LTE and 5G NR accounting for the majority of standards.*
 
-![SEP outcome distribution across sectors and jurisdictions](Output/outcome_plot_court.jpeg)
+![Hierarchy of SDO families, technologies and standards](Output/plot_sdo_treemap.jpeg)
 
 *SEP litigation is concentrated among a small group of repeat litigants: Panasonic initiated the largest number of cases (18), while Xiaomi was the most frequently sued company (20).*
 
 ![Leading Claimants and Defendants in SEP cases](Output/top10_sep_claim_def.jpeg)
 
-*ETSI accounts for 65.4% of all identified SEP cases, with Munich and Mannheim serving as the primary litigation courts.*
+*ETSI dominates across jurisdictions, with Munich and Mannheim accounting for the largest number of ETSI-related SEP cases.*
 ![Bar plot of the SDO type amongst SEP cases](Output/plot_df_sep_sdo.jpeg)
 
 
