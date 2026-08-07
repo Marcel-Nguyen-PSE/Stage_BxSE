@@ -465,69 +465,6 @@ labs(
 
 ggsave('Output/geo_dist_countries_sep.jpeg', map_country_plot, width = 12, height = 7, dpi = 500)
 
-# Outcome distribution of SEP actions ----
-
-outcome_plot_df <- df %>%
-  filter(
-    SEP == 1,
-    !is.na(court),
-    !is.na(Outcome),
-    Outcome != ""
-  ) %>%
-  distinct(ID, court, Outcome) %>%
-  count(court, Outcome, name = "n")
-
-outcome_order <- outcome_plot_df %>%
-  group_by(Outcome) %>%
-  summarise(total = sum(n), .groups = "drop") %>%
-  arrange(total) %>%
-  pull(Outcome)
-
-outcome_plot_df <- outcome_plot_df %>%
-  mutate(
-    outcome = factor(Outcome, levels = outcome_order)
-  )
-
-outcome_plot_court <- ggplot(
-  outcome_plot_df,
-  aes(
-    x = n,
-    y = outcome
-  )
-) +
-  geom_col(
-    width = 0.7,
-    fill = "grey55",
-    color = "black",
-    linewidth = 0.2
-  ) +
-  geom_text(
-    aes(label = n),
-    hjust = -0.2,
-    size = 3
-  ) +
-  facet_wrap(
-    ~ court,
-    ncol = 3,
-    scales = "free_y"
-  ) +
-  scale_x_continuous(
-    breaks = scales::breaks_pretty(n = 4),
-    expand = expansion(mult = c(0, 0.15))
-  ) +
-  coord_cartesian(clip = "off") +
-  theme_minimal(base_size = 11) +
-  theme(
-    strip.background = element_rect(fill = "grey92"),
-    strip.text = element_text(face = "bold"),
-    panel.grid.major.y = element_blank(),
-    panel.grid.minor = element_blank(),
-    panel.spacing = grid::unit(1, "lines"),
-    plot.title = element_text(face = "bold", hjust = 0.5)
-  )
-
-ggsave('Output/outcome_plot_court.jpeg', outcome_plot_court, width = 12, height = 7, dpi = 500)
-
 # Firm characteristics of SEP claimants and defendants (and N-SEP) by SECTOR ----
 
 sector_vars <- c("CHEMISTRY", "MECHANICAL", "ICT", "Instruments")
@@ -626,89 +563,6 @@ ggsave(
   dpi = 500
 )
 
-# Firm characteristic of SEP by QUALITY ---- 
-
-heatmap_df <- df %>%
-  filter(
-    !is.na(court),
-    !is.na(Type),
-    !is.na(SEP)
-  ) %>%
-  mutate(
-    Firm_type = case_when(
-      Type == "UPSTREAM"   ~ "Upstream",
-      Type == "DOWNSTREAM" ~ "Downstream",
-      Type == "UNKNOWN"    ~ "Unknown",
-      Type == "PAE"        ~ "PAE",
-      TRUE                 ~ NA_character_
-    ),
-
-    SEP_status = factor(
-      SEP,
-      levels = c(0, 1),
-      labels = c("Non-SEP", "SEP")
-    )
-  ) %>%
-  filter(!is.na(Firm_type)) %>%
-  count(court, Firm_type, SEP_status, name = "n") %>%
-  complete(
-    court,
-    Firm_type,
-    SEP_status,
-    fill = list(n = 0)
-  ) %>%
-  unite(
-    "Firm_SEP",
-    Firm_type,
-    SEP_status,
-    sep = " — "
-  )
-
-heatmap_quality <- ggplot(
-  heatmap_df %>%
-    separate(
-      Firm_SEP,
-      into = c("Firm_type", "SEP_status"),
-      sep = " — "
-    ),
-  aes(
-    x = court,
-    y = Firm_type,
-    fill = n
-  )
-) +
-  geom_tile(
-    color = "white",
-    linewidth = 0.5
-  ) +
-  geom_text(
-    aes(label = ifelse(n == 0, "", n)),
-    size = 3.5
-  ) +
-  facet_wrap(
-    ~ SEP_status,
-    ncol = 1
-  ) +
-  scale_fill_gradient(
-    low = "white",
-    high = "grey20"
-  ) +
-  theme_minimal(base_size = 12) +
-  theme(
-    axis.text.x = element_text(
-      angle = 45,
-      hjust = 1
-    ),
-    strip.text = element_text(face = "bold"),
-    panel.grid = element_blank(),
-    plot.title = element_text(
-      face = "bold",
-      hjust = 0.5
-    )
-  )
-
-ggsave('Output/heatmap_sector.jpeg', heatmap_quality, width = 12, height = 7, dpi = 500)
-
 # SDO Categories ----
 
 df2 <- read_dta('Data/Data_SEP_FSA2.dta')
@@ -720,14 +574,6 @@ df2_sdo <- df2 %>%
   filter(SEP == 1, !is.na(SDO)) %>%
   distinct(ID, SDO) %>%
   count(SDO, sort = TRUE) 
-
-# Bar plot of SDO categories (aggregate) ---- 
-
-plot_sdo <- ggplot(df2_sdo, aes(x = n, y = reorder(SDO, n))) +
-            geom_col() +
-            theme_minimal()
-
-ggsave('Output/plot_sdo_sep_agg.jpeg', width = 12, height = 7, dpi = 500)
 
 # Bar plot of SDO categories (across jurisdictions)
 
