@@ -533,7 +533,7 @@ sector_share <- df %>%
 
 ict_share <- df %>%
   filter(ICT == 1) %>%
-  mutate(Type = ifelse(SEP == 1, "SEP", "Non-SEP")) %>%
+  mutate(Type = ifelse(SEP == 1, "SEP", "N-SEP")) %>%
   group_by(Type) %>%
   summarise(n = n_distinct(ID), .groups = "drop") %>%
   mutate(
@@ -640,8 +640,20 @@ sdo_plot <- ggplot(
     strip.text = element_text(face = "plain"),
     legend.position = "none",
     panel.grid.minor.x = element_blank(),
-    panel.grid.major.x = element_blank()
-  )
+    panel.grid.major.x = element_blank(),
+    axis.title.x = element_blank()
+  ) +
+labs(
+  caption = "Note: ITU-T / ISO/IEC” refers to standards developed jointly by ITU-T and ISO/IEC, whereas “ISO/IEC” denotes standards developed solely within the ISO/IEC framework. "
+) + 
+  theme(
+  plot.caption = element_text(
+    hjust = 0,
+    color = "grey50",
+    size = 9
+  ),
+  legend.position = 'bottom'
+)
 
 sdo_plot
 
@@ -736,7 +748,7 @@ plot_category_claim_def <- ggplot(
     legend.position = 'bottom'
   ) +
 labs(
-  caption = "Note: 22 cases with empty defendant categories and 15 with empty claimants categories are omitted in this plot. Numeric values are not shown for shares inferior to 5%."
+  caption = "Note: 22 cases with empty defendant categories and 15 with empty claimants categories are omitted in this plot. Numeric values are not shown for shares inferior to 5%. \n Claimant category (e.g, UPSTREAM, DOWNTREAM, HYBRID) is fetched considering the patent at stake and the firm public statements and reports."
 ) + 
   theme(
   plot.caption = element_text(
@@ -752,7 +764,8 @@ labs(
   ),
   position = position_stack(vjust = 0.5),
   color = "white",
-  size = 3
+  size = 3,
+  fontface = 'bold'
 ) 
 
 plot_category_claim_def 
