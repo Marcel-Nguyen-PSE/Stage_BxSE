@@ -376,7 +376,18 @@ plot_bar_top10_sep_def_claim <-
   wrap_elements(shared_legend) +
   plot_layout(
     heights = c(1, 0.08)
-  )
+  ) +
+labs(
+  caption = "Note: ETRI is a research institute and should therefore not be labelled as an Operating Company. It is so for readability."
+) + 
+  theme(
+  plot.caption = element_text(
+    hjust = 0,
+    color = "grey50",
+    size = 9
+  ),
+  legend.position = 'bottom'
+)
 
 ggsave(
   "Output/top10_sep_claim_def.jpeg",
@@ -864,7 +875,6 @@ plot_sdo_treemap
 
 ggsave('Output/plot_sdo_treemap.jpeg', plot_sdo_treemap, height = 7, width = 12, dpi = 500)
 
-
 sdo_share <- sdo_share %>%
   mutate(color_rank = if_else(SDO == "ETSI", 1, color_rank))
 
@@ -963,7 +973,7 @@ plot_standard <- ggplot(
     fontsize = 6,
     start = "bottomright"
   ) +
-  labs(title = "Standards within cellular") +
+  labs(title = "Standards within Cellular") +
   theme_void() +
   theme(
     legend.position = "none",
@@ -998,9 +1008,19 @@ plot_sdo_treemap <-
   plot_technology_small +
   plot_spacer() +
   plot_standard_small +
-  plot_layout(widths = c(1, 0.03, 0.9, 0.03, 0.8))
+  plot_layout(widths = c(1, 0.03, 0.9, 0.03, 0.8)) +
+  plot_annotation(
+    caption = "Note: An SDO (Standards Development Organization) family refers to the standards-setting body responsible for developing and maintaining technical standards. \n Technology categories denote the broad technological domains covered by patents within an SDO. Standards refer to the specific technical standards implemented within a technology category.",
+    theme = theme(
+      plot.caption = element_text(
+        hjust = 0,
+        color = "grey50",
+        size = 9
+      )
+    )
+  )
 
-plot_sdo_treemap
+plot_sdo_treemap 
 
 ggsave(
   'Output/plot_sdo_treemap.jpeg',
